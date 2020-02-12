@@ -76,7 +76,7 @@ strSQL = "SELECT \
    LEFT OUTER JOIN  c_spec_worklist \
             ON c_specimen.specimen_id = c_spec_worklist.specimen_id  \
       WHERE ( c_spec_worklist.person_id = 'mwd51451') 	\
-      AND ( c_spec_worklist.link_inst = p_special_proc.sp_inst) 	\
+      AND ( c_spec_worklist.link_inst = p_special_proc.sp_inst)"
 		//logger.debug(strSQL)"
 try {
   var intResultSize = 0
