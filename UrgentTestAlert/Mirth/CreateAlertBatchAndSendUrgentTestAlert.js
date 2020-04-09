@@ -80,10 +80,10 @@ try {
   //  Get Covid results available
   strSQL = " \
     /*qryResultCountByPortalID*/ \
-    SELECT PortalID, Test, COUNT(CaseNo) as ResultsAvailable, AlertBatch, ClientName \
+    SELECT PortalID, Test, COUNT(CaseNo) as ResultsAvailable, AlertBatch \
     FROM tblTestResult \
     WHERE AlertBatch = (SELECT LAST_INSERT_ID()) \
-    GROUP BY PortalID, Test, AlertBatch, ClientName;"
+    GROUP BY PortalID, Test, AlertBatch;"
   objMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
 
   //  For Each Client ID - compose message and send email
@@ -106,10 +106,9 @@ try {
     	
       // Get results available    
       var strPortalID = objMYLSQLResult.getString('PortalID')
-      var strClientName = objMYLSQLResult.getString('ClientName')
       var strResultsAvailableCount = objMYLSQLResult.getString('ResultsAvailable')
       var strTestName = objMYLSQLResult.getString('Test')
-      var strMessageText = ClientName + ': ' + strResultsAvailableCount + ' new ' + strTestName + ' results available'
+      var strMessageText = strResultsAvailableCount + ' new ' + strTestName + ' results available'
       
       // Get positive results for Covid-19 if any
       strSQL =  "/*qryPositiveCountByPortalID*/ \
