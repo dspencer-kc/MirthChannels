@@ -80,10 +80,10 @@ try {
   //  Get Covid results available
   strSQL = " \
     /*qryResultCountByPortalID*/ \
-    SELECT PortalID, Test, COUNT(CaseNo) as ResultsAvailable, AlertBatch \
+    SELECT PortalID, Test, COUNT(CaseNo) as ResultsAvailable, AlertBatch, ClientName \
     FROM tblTestResult \
     WHERE AlertBatch = (SELECT LAST_INSERT_ID()) \
-    GROUP BY PortalID, Test, AlertBatch;"
+    GROUP BY PortalID, Test, AlertBatch, ClientName;"
   objMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
 
   //  For Each Client ID - compose message and send email
@@ -106,9 +106,10 @@ try {
     	
       // Get results available    
       var strPortalID = objMYLSQLResult.getString('PortalID')
+      var strClientName = objMYLSQLResult.getString('ClientName')
       var strResultsAvailableCount = objMYLSQLResult.getString('ResultsAvailable')
       var strTestName = objMYLSQLResult.getString('Test')
-      var strMessageText = strResultsAvailableCount + ' new ' + strTestName + ' results available'
+      var strMessageText = strClientName + ': ' + strResultsAvailableCount + ' new ' + strTestName + ' results available'
       
       // Get positive results for Covid-19 if any
       strSQL =  "/*qryPositiveCountByPortalID*/ \
@@ -122,7 +123,7 @@ try {
        if (intDebugLevel > 5) {
   	     logger.debug(strSQL)
        }       
-        objPosMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
+        var objPosMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
         var intPosResultCountSize = objPosMYLSQLResult.size()
 
         if (intPosResultCountSize > 0) {
@@ -131,7 +132,29 @@ try {
           strMessageText = strMessageText + ', ' + strPositiveResults + ' positive.'
         } else {
           strMessageText = strMessageText + ', 0 positive.'
-        } // End If   
+        } // End If
+        
+              // Get Repeat Testing results for Covid-19 if any
+        strSQL =  "/*qryRepeatCountByPortalID*/ \
+        SELECT PortalID, COUNT(CaseNo) as RepeatResults \
+        FROM tblTestResult \
+        WHERE AlertBatch = (SELECT LAST_INSERT_ID()) AND \
+        TestResult = 'PENDING REPEAT TESTING' AND \
+        PortalID = '" + strPortalID + "' \
+        GROUP BY PortalID;"
+
+       if (intDebugLevel > 5) {
+  	     logger.debug(strSQL)
+       }       
+        var objRepeatMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
+        var intPosResultCountSize = objRepeatMYLSQLResult.size()
+
+        if (intPosResultCountSize > 0) {
+        	objRepeatMYLSQLResult.next()
+          var strRepeatResults = objRepeatMYLSQLResult.getString('RepeatResults')
+          strMessageText = strMessageText + ' ' + strRepeatResults + ' case(s) pending repeat testing.'
+        }
+
 
       var strEmailSubject = 'MAWD Urgent Result Available, Hospital: ' + strPortalID
       // Send Email
