@@ -167,7 +167,7 @@ try {
       if (intDebugLevel > 5) {
         logger.debug(strSQL)
       }       
-      var objSpecUnacceptableMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
+      var objUnacceptableSpecMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
       var intSpecUnacceptableCountSize = objUnacceptableSpecMYLSQLResult.size()
 
       if (intSpecUnacceptableCountSize > 0) {
