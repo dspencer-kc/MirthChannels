@@ -102,7 +102,6 @@ try {
 
     //For each portal ID
     for (var i = 0; i < intResultCountSize; i++) {
-
     	
       // Get results available    
       var strPortalID = objMYLSQLResult.getString('PortalID')
@@ -120,40 +119,62 @@ try {
         PortalID = '" + strPortalID + "' \
         GROUP BY PortalID;"
 
-       if (intDebugLevel > 5) {
+      if (intDebugLevel > 5) {
   	     logger.debug(strSQL)
-       }       
-        var objPosMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
-        var intPosResultCountSize = objPosMYLSQLResult.size()
+      }       
+      var objPosMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
+      var intPosResultCountSize = objPosMYLSQLResult.size()
 
-        if (intPosResultCountSize > 0) {
-        	objPosMYLSQLResult.next()
-          var strPositiveResults = objPosMYLSQLResult.getString('PositiveResults')
-          strMessageText = strMessageText + ', ' + strPositiveResults + ' positive.'
-        } else {
-          strMessageText = strMessageText + ', 0 positive.'
-        } // End If
+      if (intPosResultCountSize > 0) {
+        objPosMYLSQLResult.next()
+        var strPositiveResults = objPosMYLSQLResult.getString('PositiveResults')
+        strMessageText = strMessageText + ', ' + strPositiveResults + ' positive.'
+      } else {
+        strMessageText = strMessageText + ', 0 positive.'
+      } // End If
         
-              // Get Repeat Testing results for Covid-19 if any
-        strSQL =  "/*qryRepeatCountByPortalID*/ \
-        SELECT PortalID, COUNT(CaseNo) as RepeatResults \
+      // Get Repeat Testing results for Covid-19 if any
+      strSQL =  "/*qryRepeatCountByPortalID*/ \
+      SELECT PortalID, COUNT(CaseNo) as RepeatResults \
+      FROM tblTestResult \
+      WHERE AlertBatch = (SELECT LAST_INSERT_ID()) AND \
+      TestResult = 'PENDING REPEAT TESTING' AND \
+      PortalID = '" + strPortalID + "' \
+      GROUP BY PortalID;"
+
+      if (intDebugLevel > 5) {
+        logger.debug(strSQL)
+      } 
+
+      var objRepeatMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
+      var intRepeatResultCountSize = objRepeatMYLSQLResult.size()
+
+      if (intRepeatResultCountSize > 0) {
+        objRepeatMYLSQLResult.next()
+        var strRepeatResults = objRepeatMYLSQLResult.getString('RepeatResults')
+        strMessageText = strMessageText + ' ' + strRepeatResults + ' case(s) pending repeat testing.'
+      } // End Repeat Testing
+
+      // Get Unacceptable Specimens for Covid-19 if any
+      strSQL =  "/*qryUnacceptableCountByPortalID*/ \
+        SELECT PortalID, COUNT(CaseNo) as SpecUnacceptableResults \
         FROM tblTestResult \
         WHERE AlertBatch = (SELECT LAST_INSERT_ID()) AND \
-        TestResult = 'PENDING REPEAT TESTING' AND \
+        TestResult = 'SPECIMEN UNACCEPTABLE' AND \
         PortalID = '" + strPortalID + "' \
         GROUP BY PortalID;"
 
-       if (intDebugLevel > 5) {
-  	     logger.debug(strSQL)
-       }       
-        var objRepeatMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
-        var intPosResultCountSize = objRepeatMYLSQLResult.size()
+      if (intDebugLevel > 5) {
+        logger.debug(strSQL)
+      }       
+      var objSpecUnacceptableMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
+      var intSpecUnacceptableCountSize = objUnacceptableSpecMYLSQLResult.size()
 
-        if (intPosResultCountSize > 0) {
-        	objRepeatMYLSQLResult.next()
-          var strRepeatResults = objRepeatMYLSQLResult.getString('RepeatResults')
-          strMessageText = strMessageText + ' ' + strRepeatResults + ' case(s) pending repeat testing.'
-        }
+      if (intSpecUnacceptableCountSize > 0) {
+        objUnacceptableSpecMYLSQLResult.next()
+        var strUnacceptableSpecResults = objUnacceptableSpecMYLSQLResult.getString('SpecUnacceptableResults')
+        strMessageText = strMessageText + ' ' + strUnacceptableSpecResults + ' unacceptable specimen(s).'
+      }
 
 
       var strEmailSubject = 'MAWD Urgent Result Available, Hospital: ' + strPortalID
@@ -173,7 +194,7 @@ try {
       if (intDebugLevel > 5) {
         logger.debug('Email Send Status:' + blEmailStatus)
       }    
-    } //End for
+    } //End for each portal id
 
     //Get Batch Number
     var strAlertBatchNo = objMYLSQLResult.getString('AlertBatch')
