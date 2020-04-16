@@ -1,5 +1,10 @@
 //  Not - be sure to change data types to Raw under Channel Summary.
 
+const strSybaseUserName = configurationMap.get('SybaseUserName')
+const strSybasePassword = configurationMap.get('SybasePassword')
+const strSybaseJDBCConnection = configurationMap.get('SybaseJDBCConnection')
+const strSybaseJDBCDriver = configurationMap.get('SybaseJDBCDriver')
+
 var dbConnCoPath
 var dbConnMYSQL
 var strSQL
@@ -81,7 +86,7 @@ strSQL = "SELECT \
 try {
   var intResultSize = 0
 
-	dbConnCoPath = DatabaseConnectionFactory.createDatabaseConnection('net.sourceforge.jtds.jdbc.Driver','jdbc:jtds:sybase://10.24.4.18:5000/coplive','report','report')
+	dbConnCoPath = DatabaseConnectionFactory.createDatabaseConnection(strSybaseJDBCDriver,strSybaseJDBCConnection,strSybaseUserName,strSybasePassword)
 	result = dbConnCoPath.executeCachedQuery(strSQL);	
   
   if (intDebugLevel > 5) {
