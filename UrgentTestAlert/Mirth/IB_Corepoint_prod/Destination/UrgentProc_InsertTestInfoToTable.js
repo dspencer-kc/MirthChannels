@@ -11,10 +11,10 @@ try {
   var strCaseNo = $('strCaseNo')
   var strPortalID = $('strPortalID')
   var strTestName = $('strTestName')
-  var strTestResult = $('strTestResult')
-  var strClientName = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('strClientName'))
-  var strPatientState = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('strPatientState'))
-  var strSignoutDT = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('strSignoutDT'))
+  var strTestResult = $('strTestResult')  
+  var strClientName = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strClientName'))
+  var strPatientState = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strPatientState'))
+  var strSignoutDT = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strSignoutDT'))
 
   strSQL = "INSERT INTO UrgentProcedureTracking.tblTestResult \
     (CaseNo, \
