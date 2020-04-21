@@ -36,7 +36,7 @@ try {
     PortalID = '" + strPortalID + "', \
     Test = '" + strTestName + "', \
     TestResult = '" + strTestResult + "', \
-    ClientName = '" + strClientName + "', \
+    ClientName = " + strClientName + ", \
     PatientStateOfResidence " + strPatientState + ", \
     DTSignedOut " + strSignoutDT + ", \
     AlertBatch = null, \
