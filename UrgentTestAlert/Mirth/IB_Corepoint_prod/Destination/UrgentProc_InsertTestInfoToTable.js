@@ -12,26 +12,33 @@ try {
   var strPortalID = $('strPortalID')
   var strTestName = $('strTestName')
   var strTestResult = $('strTestResult')
-  var strClientName = $('strClientName')
-
+  var strClientName = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('strClientName'))
+  var strPatientState = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('strPatientState'))
+  var strSignoutDT = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('strSignoutDT'))
 
   strSQL = "INSERT INTO UrgentProcedureTracking.tblTestResult \
     (CaseNo, \
     PortalID, \
     Test, \
     TestResult, \
+    PatientStateOfResidence, \
+    DTSignedOut, \
     ClientName) \
     VALUES \
     ('" + strCaseNo + "', \
     '" + strPortalID + "', \
     '" + strTestName + "', \
     '" + strTestResult + "', \
-    '" + strClientName + "') \
+    " + strPatientState + ", \
+    " + strSignoutDT + ", \
+    " + strClientName + ") \
     ON DUPLICATE KEY UPDATE \
     PortalID = '" + strPortalID + "', \
     Test = '" + strTestName + "', \
     TestResult = '" + strTestResult + "', \
     ClientName = '" + strClientName + "', \
+    PatientStateOfResidence " + strPatientState + ", \
+    DTSignedOut " + strSignoutDT + ", \
     AlertBatch = null, \
     DTInserted = now();"
 
@@ -43,5 +50,30 @@ try {
 } finally {
   if (dbConnMYSQL) {
     dbConnMYSQL.close()
+  }
+}
+
+function SanitizeVariableAddLeadingAndTrailingApostrophies (txt) {
+  if (txt == null) {
+      return "null"
+  } else {
+      return "'" + EscapeApostrophe(txt) + "'"
+  }
+}
+function EscapeApostrophe(txt)  {
+  return (txt + "").replace(/\'/g, "''")
+}
+function SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString (txt) {
+  if (txt == null) {
+      return ""
+  } else {
+      return "'" + EscapeApostrophe(txt) + "'"
+  }
+}
+function SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString (txt) {
+  if (txt == null) {
+      return ""
+  } else {
+      return EscapeApostrophe(txt)
   }
 }
