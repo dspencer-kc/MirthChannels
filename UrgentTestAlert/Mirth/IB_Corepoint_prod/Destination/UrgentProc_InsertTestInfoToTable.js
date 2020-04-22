@@ -31,15 +31,15 @@ try {
     " + strTestName + ", \
     " + strTestResult + ", \
     " + strPatientState + ", \
-    " + strSignoutDT + ", \
+    (SELECT STR_TO_DATE(" + strSignoutDT + ",'%Y%m%d%H%i')), \
     " + strClientName + ") \
     ON DUPLICATE KEY UPDATE \
     PortalID = " + strPortalID + ", \
     Test = " + strTestName + ", \
     TestResult = " + strTestResult + ", \
     ClientName = " + strClientName + ", \
-    PatientStateOfResidence " + strPatientState + ", \
-    DTSignedOut " + strSignoutDT + ", \
+    PatientStateOfResidence = " + strPatientState + ", \
+    DTSignedOut = (SELECT STR_TO_DATE(" + strSignoutDT + ",'%Y%m%d%H%i')), \
     AlertBatch = null, \
     DTInserted = now();"
 
