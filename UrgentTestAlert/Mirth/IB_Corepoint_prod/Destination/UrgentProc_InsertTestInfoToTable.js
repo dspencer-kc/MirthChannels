@@ -8,13 +8,14 @@ const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
 
 try {
 
-  var strCaseNo = $('strCaseNo')
-  var strPortalID = $('strPortalID')
-  var strTestName = $('strTestName')
-  var strTestResult = $('strTestResult')  
+  var strCaseNo = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strCaseNo'))
+  var strPortalID = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strPortalID'))
+  var strTestName = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strTestName')) 
+  var strTestResult = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strTestResult'))
   var strClientName = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strClientName'))
   var strPatientState = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strPatientState'))
   var strSignoutDT = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('strSignoutDT'))
+
 
   strSQL = "INSERT INTO UrgentProcedureTracking.tblTestResult \
     (CaseNo, \
@@ -25,17 +26,17 @@ try {
     DTSignedOut, \
     ClientName) \
     VALUES \
-    ('" + strCaseNo + "', \
-    '" + strPortalID + "', \
-    '" + strTestName + "', \
-    '" + strTestResult + "', \
+    (" + strCaseNo + ", \
+    " + strPortalID + ", \
+    " + strTestName + ", \
+    " + strTestResult + ", \
     " + strPatientState + ", \
     " + strSignoutDT + ", \
     " + strClientName + ") \
     ON DUPLICATE KEY UPDATE \
-    PortalID = '" + strPortalID + "', \
-    Test = '" + strTestName + "', \
-    TestResult = '" + strTestResult + "', \
+    PortalID = " + strPortalID + ", \
+    Test = " + strTestName + ", \
+    TestResult = " + strTestResult + ", \
     ClientName = " + strClientName + ", \
     PatientStateOfResidence " + strPatientState + ", \
     DTSignedOut " + strSignoutDT + ", \
