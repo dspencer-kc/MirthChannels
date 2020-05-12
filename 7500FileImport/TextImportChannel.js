@@ -1,40 +1,83 @@
 var intDebugLevel = 10
 var intValidRPValueCutoff // If RP < this value, considered valid
 
-for (var intRPLookupCounter = 0; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
+for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
 
-  var strTargetName = msg[intRPLookupCounter]['row']['Target_Name'].toString()
+  // Mirth Scaffolding
+
+  if (typeof(msg) == 'xml') {
+    if (typeof(msg['row'][intRPLookupCounter]) == 'undefined') {
+      createSegment('row', msg, intRPLookupCounter)
+    }
+  } else {
+    if (typeof(msg) == 'undefined') {
+      msg = {}
+    }
+    if (typeof(msg['row']) == 'undefined') {
+      msg['row'] = []
+    }
+    if (typeof(msg['row'][intRPLookupCounter]) == 'undefined') {
+      msg['row'][intRPLookupCounter] = {}
+    }
+  }
+
+  if (intDebugLevel > 9) {
+    var strDebugMsg = intRPLookupCounter
+    logger.debug(strDebugMsg)
+  } 
+
+  var strTargetName = msg['row'][intRPLookupCounter]['TargetName'].toString()
+
+  if (intDebugLevel > 9) {
+    var strDebugMsg = 'Target Name: ' + strTargetName
+    logger.debug(strDebugMsg)
+  } 
+
   var strRPSampleName = 'Sample Name Not Found'
 
   // Find RP Target
   if (strTargetName === 'RP') {
+    if (intDebugLevel > 8) {
+      var strDebugMsg = 'RP Detected'
+      logger.debug(strDebugMsg)
+    } 
 
     // Confirm RP is valid
     // Get Sample Name
-    strRPSampleName = msg[intRPLookupCounter]['row']['Sample_Name'].toString()
-    var strRPCTValue = msg['row']['CT'].toString()  
+    strRPSampleName = msg['row'][intRPLookupCounter]['SampleName'].toString()
 
-    if (strRPCTValue === parseFloat(strRPCTValue)) {
+    if (intDebugLevel > 7) {
+      var strDebugMsg = 'Sample Name:' + strRPSampleName
+      logger.debug(strDebugMsg)
+    } 
+    var strRPCTValue = msg['row'][intRPLookupCounter]['CT'].toString()
+
+    if (intDebugLevel > 7) {
+      var strDebugMsg = 'RPCTValue:' + strRPCTValue
+      logger.debug(strDebugMsg)
+    } 
+
+    if (strRPCTValue == parseFloat(strRPCTValue)) {
       // RP is Number - confirm less than cutoff value
       if (strRPCTValue < intValidRPValueCutoff) {
         // RP is Valid
         // Loop through messages to find next sample name
         // Look for N1 CT Value
-        for (var intN1LookupCounter = 0; intN1LookupCounter < getArrayOrXmlLength(msg['row']); intN1LookupCounter++) {
-          var strN1SampleName = msg[intN1LookupCounter]['row']['Sample_Name'].toString()
+        for (var intN1LookupCounter = 0; intN1LookupCounter < getArrayOrXmlLength(msg['row'][intRPLookupCounter]); intN1LookupCounter++) {
+          var strN1SampleName = msg['row'][intRPLookupCounter]['SampleName'].toString()
           if (strRPSampleName === strN1SampleName) {
-            var strN1TargetName = msg[intN1LookupCounter]['row']['Target_Name'].toString()
+            var strN1TargetName = msg['row'][intRPLookupCounter]['TargetName'].toString()
             if (strN1TargetName === 'N1') {
               var strN1CTValue = 'Value Not Assigned'
-              strN1CTValue = msg[intN1LookupCounter]['row']['CT'].toString()
+              strN1CTValue = msg['row'][intRPLookupCounter]['CT'].toString()
               if (strN1CTValue === 'Undetermined') {
                 // Find N2 Value
                 for (var intN2LookupCount = 0; intN2LookupCount < getArrayOrXmlLength(msg['row']); intN2LookupCount++) {
-                  var strN2SampleName = msg[intN2LookupCount]['row']['Sample_Name'].toString()
+                  var strN2SampleName = msg['row'][intN2LookupCount]['SampleName'].toString()
                   if (strN2SampleName === strN1SampleName) {
                     if (strN1TargetName === 'N2') {
                       var strN2CTValue = 'Value Not Assigned'
-                      strN2CTValue = msg[intN2LookupCount]['row']['CT'].toString()
+                      strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
                       if (strN2CTValue === 'Undetermined') {
                         // Result is NOT DETECTED
                         if (intDebugLevel > 5) {
