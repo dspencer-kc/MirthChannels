@@ -83,7 +83,7 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
                         PrintToDebugLog(3, 'N2 Found Undetermined')
                         PrintToDebugLog(2, 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue:' + strN2CTValue)
 
-                        strResult = strResult + 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue:' + strN2CTValue
+                        strResult = strResult + strRPSampleName + ': NOT DETECTED \r\n'
                         
                         if (intDebugLevel > 5) {
                           var strDebugMsg = strRPSampleName + ' NOT DETECTED'
@@ -91,7 +91,7 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
                           logger.debug(strDebugMsg)
 
                           // Save to Message
-                          tmp['OBX'][0]['OBX.5']['OBX.5.1']
+                          // tmp['OBX'][0]['OBX.5']['OBX.5.1']
                         }
                       }
                     }
@@ -111,8 +111,9 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
     }
   }
 }
-
-return(strResult)
+var strFileName = '/media/windowsshare/procedureinterface/7500/Result/Result_' + Date.now() + sourceMap.get('originalFilename')
+FileUtil.write(strFileName, false, strResult);
+// return(strResult)
 
 function PrintToDebugLog (intHowImportant, strDebugMsg) {
   if (intDebugLevel > intHowImportant) {
