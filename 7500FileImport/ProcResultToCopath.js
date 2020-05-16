@@ -1,6 +1,7 @@
 const strSybaseUserName = configurationMap.get('SybaseUserName')
 const strSybasePassword = configurationMap.get('SybasePassword')
 const strSybaseJDBCConnection = configurationMap.get('SybaseJDBCConnection')
+// const strSybaseJDBCConnection = configurationMap.get('TESTSybaseJDBCConnection')
 const strSybaseJDBCDriver = configurationMap.get('SybaseJDBCDriver')
 var strSQL = ''
 var result
@@ -9,8 +10,9 @@ var strResult = msg['row']['result'].toString()
 var stPatientInitials = ''
 var strPatientInitialsCompare = 'Initialized'
 var strAccessionID = ''
-var strCaseNumberOnly = '1563'
+var strCaseNumberOnly = ''
 tmp['PID']['PID.5']['PID.5.5'] = ''
+tmp['MSH']['MSH.10']['MSH.10.1'] = DateUtil.getCurrentDate('yyyyMMddHHmmssSSSSSS')
 
 // Cleanup Sample Name
 stPatientInitials = strSampleName.slice(-2)
@@ -29,7 +31,7 @@ strCaseNumberOnly = strAccessionID.split('-')[1]
 logger.debug(strCaseNumberOnly)
 
 strSQL = " \
-SELECT \
+  SELECT \
   TOP 1 c_specimen.specclass_id, \
   c_specimen.specnum_year, \
   c_specimen.specnum_num, \
@@ -43,9 +45,16 @@ FROM \
       r_pat_demograph \
       INNER JOIN r_medrec ON r_pat_demograph.patdemog_id = r_medrec.patdemog_id\
     ) \
-    INNER JOIN c_specimen ON r_pat_demograph.patdemog_id = c_specimen.patdemog_id\
+    INNER JOIN c_specimen ON (\
+      c_specimen.client_id = r_medrec.client_id\
+    ) \
+    INNER JOIN c_d_client ON (\
+      r_medrec.client_id = c_d_client.id\
+    ) \
+    AND (\
+      r_pat_demograph.patdemog_id = c_specimen.patdemog_id\
+    )\
   ) \
-  INNER JOIN c_d_client ON r_medrec.client_id = c_d_client.id \
 WHERE \
   (\
     (\
@@ -56,6 +65,10 @@ WHERE \
     ) \
     AND (\
       (c_specimen.specnum_num)= " + strCaseNumberOnly + "\
+    ) \
+    AND (\
+      c_specimen.client_id = r_medrec.client_id \
+      OR r_medrec.client_id = 'co4'\
     )\
   )"
 
@@ -109,7 +122,8 @@ var strCaseAndProc = strAccessionID + '$' + strProcInst + '$' + strCompleteDate 
 // strResult = 'TEST Result'
 
 if ( msg['row']['result'].toString() === 'NOT DETECTED') {
-strResult = "SARS-CoV-2 (COVID-19) RT-PCR\.br\SARS-CoV-2 (COVID-19) RNA     NOT DETECTED               (Ref: Not Detected)\.br\\.br\\.br\The SARS-CoV-2 (COVID-19) RT-PCR procedure performed at MAWD Molecular Laboratory is a real-time RT-PCR test intended for the qualitative detection of SARS-CoV-2 specific nucleic acid from upper respiratory tract specimens (nasopharyngeal or oropharyngeal swabs).  The performance of this test has not been established for monitoring treatment of SARS-CoV-2 infection. This test was developed and its performance characteristics determined by the MAWD Molecular Laboratory. This test was developed for use as a part of a response to the public health emergency declared to address the outbreak of COVID-19.  This test has not been reviewed by the Food and Drug Administration. The FDA has determined that such clearance or approval is not necessary. This test is used for clinical purposes. It should not be regarded as investigational or for research. This laboratory is certified under the Clinical Laboratory Improvement Act of 1988 (CLIA-88) as qualified to perform high complexity  clinical laboratory testing.\.br\\.br\A positive result is indicative of the presence of SARS-CoV-2 RNA but does not rule out bacterial infection or co-infection with other viruses.  Laboratories within the United States and its territories are required to report all positive results to the appropriate public health authorities.\.br\A negative result does not definitively rule out SARS-CoV-2 infection and should be combined with clinical observations, patient history, and epidemiological information when making clinical decisions. \.br\Performed by: MAWD Pathology Group, 9705 Lenexa Drive, Lenexa, KS 66215, CLIA 17D2154812\.br"	
+// strResult = "SARS-CoV-2 (COVID-19) RT-PCR\.br\SARS-CoV-2 (COVID-19) RNA     NOT DETECTED               (Ref: Not Detected)\.br\\.br\\.br\The SARS-CoV-2 (COVID-19) RT-PCR procedure performed at MAWD Molecular Laboratory is a real-time RT-PCR test intended for the qualitative detection of SARS-CoV-2 specific nucleic acid from upper respiratory tract specimens (nasopharyngeal or oropharyngeal swabs).  The performance of this test has not been established for monitoring treatment of SARS-CoV-2 infection. This test was developed and its performance characteristics determined by the MAWD Molecular Laboratory. This test was developed for use as a part of a response to the public health emergency declared to address the outbreak of COVID-19.  This test has not been reviewed by the Food and Drug Administration. The FDA has determined that such clearance or approval is not necessary. This test is used for clinical purposes. It should not be regarded as investigational or for research. This laboratory is certified under the Clinical Laboratory Improvement Act of 1988 (CLIA-88) as qualified to perform high complexity  clinical laboratory testing.\.br\\.br\A positive result is indicative of the presence of SARS-CoV-2 RNA but does not rule out bacterial infection or co-infection with other viruses.  Laboratories within the United States and its territories are required to report all positive results to the appropriate public health authorities.\.br\A negative result does not definitively rule out SARS-CoV-2 infection and should be combined with clinical observations, patient history, and epidemiological information when making clinical decisions. \.br\Performed by: MAWD Pathology Group, 9705 Lenexa Drive, Lenexa, KS 66215, CLIA 17D2154812\.br"	
+  strResult = "SARS-CoV-2 (COVID-19) RNA NOT DETECTED"
 }  // Add else if statement here for positive result
 
 

@@ -83,6 +83,29 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
                         PrintToDebugLog(3, 'N2 Found Undetermined')
                         PrintToDebugLog(2, 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue:' + strN2CTValue)
 
+                        /* strHL7Message = "\
+MSH|^~\&|COPATHPLUS|MAWD|COPATHPLUS|99999|20110812155410||ORU^R01|16600002339256|P|2.3\r\n\
+PID|1||30484186^^^99999||Test^Test^^^Ms.||19000101|F||||||9999999991\r\n\
+ORC|RE|2170580279|MP20-1$1$201108121640$2019||CM\r\n\
+OBR|1|2170580279|MP20-1$1$201108121640$2019|2019^SARS-CoV-2 (COVID-19)||||||||||||||||||20110812155358||SP|F||||||||UXD^Cerner^User\r\n\
+OBX|1|TX|PIN||HeyMaLookIMadeIt.||||||F\r\n\
+OBX|2|TX|PRC|This is the procedure comment line one||||||F\r\n" */
+                       var strProcResult = 'NOT DETECTED'
+                       
+
+                       //JSON
+                       //var strJSON = '{"SampleName":"' + strRPSampleName + '","Result":"' + strResult + '"}'
+                       // var strJSON = '"SampleName":"' + strRPSampleName + '","Result":"' + strResult + '"'
+// var strJSON = '{“header”: {“sample_name”: “' + strRPSampleName + '”,“result”: “' + strResult + '”}}'
+// var strJSON = '{"samplename":"' + strRPSampleName + '","result":"' + strResult + '"}'
+//var strCSV = "'samplename','result'\r\n'" + strRPSampleName + "','" + strResult + "'"
+var strCSV = "'20-" + strRPSampleName + "','" + strProcResult + "'"
+
+                        //Send Message
+                        
+                        // DEV: router.routeMessage('Dev_CopathProc_Result', strCSV)
+                        router.routeMessage('Production_CopathProc_Result', strCSV)
+                        
                         strResult = strResult + strRPSampleName + ': NOT DETECTED \r\n'
                         
                         if (intDebugLevel > 5) {
@@ -112,9 +135,8 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
   }
 }
 var strFileName = '/media/windowsshare/procedureinterface/7500/Result/Result_' + Date.now() + sourceMap.get('originalFilename')
-FileUtil.write(strFileName, false, strResult);
+FileUtil.write(strFileName, true, strResult);
 // return(strResult)
-
 function PrintToDebugLog (intHowImportant, strDebugMsg) {
   if (intDebugLevel > intHowImportant) {
     logger.debug(intHowImportant + ' ' + strDebugMsg)
