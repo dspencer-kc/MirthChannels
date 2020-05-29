@@ -1,6 +1,6 @@
 var intDebugLevel = 5 // 11 is all messages, 1 is critical only
-var intValidRPValueCutoff = 32 // If RP < this value, considered valid
-var strResultTextFile = ''
+var intValidRPValueCutoff = 34 // If RP < this value, considered valid
+var strResult = ''
 
 PrintToDebugLog(10, 'TestDebugLog')
 
@@ -79,24 +79,47 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
                       var strN2CTValue = 'Value Not Assigned'
                       strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
                       if (strN2CTValue === 'Undetermined') {
-                        // RP Valid, N1 Undetermined, N2 Undetermined
                         // Result is NOT DETECTED
                         PrintToDebugLog(3, 'N2 Found Undetermined')
                         PrintToDebugLog(2, 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue:' + strN2CTValue)
-                        var strProcResult = 'NOT DETECTED'
 
-                        SendToInterfaceAndBuildTextFile(strRPSampleName, strProcResult)
-                      } else {
-                        // RP Valid, N1 Undetermined, N2 NOT Undetermined
-                        // HOLD
+                        /* strHL7Message = "\
+MSH|^~\&|COPATHPLUS|MAWD|COPATHPLUS|99999|20110812155410||ORU^R01|16600002339256|P|2.3\r\n\
+PID|1||30484186^^^99999||Test^Test^^^Ms.||19000101|F||||||9999999991\r\n\
+ORC|RE|2170580279|MP20-1$1$201108121640$2019||CM\r\n\
+OBR|1|2170580279|MP20-1$1$201108121640$2019|2019^SARS-CoV-2 (COVID-19)||||||||||||||||||20110812155358||SP|F||||||||UXD^Cerner^User\r\n\
+OBX|1|TX|PIN||HeyMaLookIMadeIt.||||||F\r\n\
+OBX|2|TX|PRC|This is the procedure comment line one||||||F\r\n" */
+                       var strProcResult = 'NOT DETECTED'
+                       
+
+                       //JSON
+                       //var strJSON = '{"SampleName":"' + strRPSampleName + '","Result":"' + strResult + '"}'
+                       // var strJSON = '"SampleName":"' + strRPSampleName + '","Result":"' + strResult + '"'
+// var strJSON = '{“header”: {“sample_name”: “' + strRPSampleName + '”,“result”: “' + strResult + '”}}'
+// var strJSON = '{"samplename":"' + strRPSampleName + '","result":"' + strResult + '"}'
+//var strCSV = "'samplename','result'\r\n'" + strRPSampleName + "','" + strResult + "'"
+var strCSV = "'20-" + strRPSampleName + "','" + strProcResult + "'"
+
+                        //Send Message
+                        
+                        // DEV: router.routeMessage('Dev_CopathProc_Result', strCSV)
+                        router.routeMessage('Production_CopathProc_Result', strCSV)
+                        
+                        strResult = strResult + strRPSampleName + ': NOT DETECTED \r\n'
+                        
+                        if (intDebugLevel > 5) {
+                          var strDebugMsg = strRPSampleName + ' NOT DETECTED'
+                          
+                          logger.debug(strDebugMsg)
+
+                          // Save to Message
+                          // tmp['OBX'][0]['OBX.5']['OBX.5.1']
+                        }
                       }
                     }
                   }
                 }
-              } else {
-                // RP Valid, CT Value is NOT Undetermined
-                // Next Confirm it is a number and less than cutoff
-                // potential deteted
               }
             }
           } else {
@@ -105,31 +128,17 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
         }
       } else {
         // RP CT is not less than 32
-        // HOLD
       }
     } else {
       // RP CT Value Not a Number
-      // HOLD
     }
   }
 }
 var strFileName = '/media/windowsshare/procedureinterface/7500/Result/Result_' + Date.now() + sourceMap.get('originalFilename')
-FileUtil.write(strFileName, true, strResultTextFile)
-// return(strResultTextFile)
+FileUtil.write(strFileName, true, strResult);
+// return(strResult)
 function PrintToDebugLog (intHowImportant, strDebugMsg) {
   if (intDebugLevel > intHowImportant) {
     logger.debug(intHowImportant + ' ' + strDebugMsg)
   }
-}
-
-function SendToInterfaceAndBuildTextFile(strLocalSampleName, strLocalProcResult) {
-
-  // Add 20- to front of sample name
-  // ***REMINDER TO ADJUST HERE FOR CURRENT YEAR and add logic if 20- is already there***
-  var strCSV = "'20-" + strLocalSampleName + "','" + strLocalProcResult + "'"
-
-  // Send Message
-  // DEV: router.routeMessage('Dev_CopathProc_Result', strCSV)
-  router.routeMessage('Production_CopathProc_Result', strCSV)
-  strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + ' \r\n'
 }
