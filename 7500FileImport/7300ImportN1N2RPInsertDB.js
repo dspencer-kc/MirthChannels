@@ -199,3 +199,6 @@ function SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString (txt
       return "'" + EscapeApostrophe(txt) + "'"
   }
 }
+function EscapeApostrophe(txt)  {
+  return (txt + "").replace(/\'/g, "''")
+}
