@@ -1,10 +1,12 @@
 var intDebugLevel = 5 // 11 is all messages, 1 is critical only
-var intValidRPValueCutoff = 40 // If RP < this value, considered valid
+var intValidRPValueCutoff = 34 // If RP < this value, considered valid
 var strResult = ''
+var intLineStart = 27
+var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
 
 PrintToDebugLog(10, 'TestDebugLog')
 
-for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
+for (var intRPLookupCounter = intLineStart; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
 
   // Mirth Scaffolding
 
@@ -134,7 +136,7 @@ var strCSV = "'20-" + strRPSampleName + "','" + strProcResult + "'"
     }
   }
 }
-var strFileName = '/media/windowsshare/procedureinterface/7500/Result/Result_' + Date.now() + sourceMap.get('originalFilename')
+var strFileName = strOutputPath + Date.now() + sourceMap.get('originalFilename')
 FileUtil.write(strFileName, true, strResult);
 // return(strResult)
 function PrintToDebugLog (intHowImportant, strDebugMsg) {
