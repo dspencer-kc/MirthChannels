@@ -1,5 +1,5 @@
 var intDebugLevel = 5 // 11 is all messages, 1 is critical only
-var intValidRPValueCutoff = 34 // If RP < this value, considered valid
+const intValidRPValueCutoff = 34 // If RP < this value, considered valid
 var strResult = ''
 var intLineStart = 27
 var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
@@ -125,8 +125,6 @@ try {
                           var strN2CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strN2CTValue)
                           var strRPCTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strRPCTValue)
                           var strFileNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('originalFilename'))
-
-
 
                           strSQL = "INSERT INTO UrgentProcedureTracking.tblCDCResults \
                           (SampleName, \
