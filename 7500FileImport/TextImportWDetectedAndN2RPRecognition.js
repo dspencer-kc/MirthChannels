@@ -361,34 +361,44 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
 
   // Insert to DB
   if (blDBUpload) {
-    var strSampleNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalSampleName)
-    var strResultValueForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalProcResult)
-    var strN1CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1CTValue)
-    var strN2CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2CTValue)
-    var strRPCTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPCTValue)
-    var strFileNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('originalFilename'))
-  
-    strSQL = "INSERT INTO UrgentProcedureTracking.tblCDCResults \
-    (SampleName, \
-    N1CTValue, \
-    N2CTValue, \
-    FileName,\
-    RPCTValue,\
-    ResultValue,\
-    Instrument)\
-    VALUES\
-    (" + strSampleNameForDB + ",\
-    " + strN1CTForDB + ",\
-    " + strN2CTForDB + ",\
-    " + strFileNameForDB + ",\
-    " + strRPCTForDB + ",\
-    " + strResultValueForDB + ",\
-    " + strInstrument + ");"
-  
+    try {
+      // DBConnection
+      dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
+      var strSampleNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalSampleName)
+      var strResultValueForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalProcResult)
+      var strN1CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1CTValue)
+      var strN2CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2CTValue)
+      var strRPCTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPCTValue)
+      var strFileNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('originalFilename'))
+    
+      strSQL = "INSERT INTO UrgentProcedureTracking.tblCDCResults \
+      (SampleName, \
+      N1CTValue, \
+      N2CTValue, \
+      FileName,\
+      RPCTValue,\
+      ResultValue,\
+      Instrument)\
+      VALUES\
+      (" + strSampleNameForDB + ",\
+      " + strN1CTForDB + ",\
+      " + strN2CTForDB + ",\
+      " + strFileNameForDB + ",\
+      " + strRPCTForDB + ",\
+      " + strResultValueForDB + ",\
+      " + strInstrument + ");"
 
+      result = dbConnMYSQL.executeUpdate(strSQL)
+    } catch (err) {
+      logger.debug('ERROR- MYSQL:' + err.name + ' Error Details: ' + err + '. SQL: ' + strSQL)
+    } finally {
+      if (dbConnMYSQL) {
+        dbConnMYSQL.close()
+      }
+    }
   }
 
-  result = dbConnMYSQL.executeUpdate(strSQL)
+
   PrintToDebugLog(5, strSQL)
 }
 function SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString (txt) {
