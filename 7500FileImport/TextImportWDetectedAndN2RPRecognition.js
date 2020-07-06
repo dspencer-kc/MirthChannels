@@ -320,11 +320,11 @@ if (blN2Check && blRPCheck) {
         var strProcResult = 'NOT DETECTED'
         var strCSV = "'20-" + strN1SampleName + "','" + strProcResult + "'"
         // Send Message
-        SendToInterfaceAndBuildTextFile(strRPSampleName, strProcResult, strN1CTValue, 'NA', 'NA')
+        SendToInterfaceAndBuildTextFile(strN1SampleName, strProcResult, strN1CTValue, 'NA', 'NA')
       } else {
         var strProcResult = 'HOLD'
         // Send Message
-        SendToInterfaceAndBuildTextFile(strRPSampleName, strProcResult, strN1CTValue, 'NA', 'NA')
+        SendToInterfaceAndBuildTextFile(strN1SampleName, strProcResult, strN1CTValue, 'NA', 'NA')
       }
     }
   }
