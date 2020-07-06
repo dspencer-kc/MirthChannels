@@ -1,5 +1,5 @@
 var intDebugLevel = 5 // 11 is all messages, 1 is critical only
-var intValidRPValueCutoff = 34 // If RP < this value, considered valid
+var intValidRPValueCutoff = 40 // If RP < this value, considered valid
 var strResultTextFile = ''
 var blRPCheck = false
 var blN2Check = false
