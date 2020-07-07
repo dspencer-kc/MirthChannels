@@ -3,16 +3,16 @@ var intValidRPValueCutoff = 40 // If RP < this value, considered valid
 var strResultTextFile = ''
 var blRPCheck = false
 var blN2Check = false
-var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+var strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 var strSQL = ''
 const blDBUpload = true
-const blSendToLIS = true
+const blSendToLIS = false
 const blSaveResultTextFile = true
 const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
 const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
-const strInstrument = '7500'
+const strInstrument = '7500TEST'
 
 PrintToDebugLog(10, 'TestDebugLog')
 
@@ -34,10 +34,11 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
     }
   }
   // Find RP Target
+  var strTargetName = msg['row'][intRPLookupCounter]['TargetName'].toString()
   if (strTargetName === 'RP') {
     blRPCheck = true
   } else {
-    if (strN2TargetName === 'N2') {
+    if (strTargetName === 'N2') {
       blN2Check = true
     }
   }
@@ -94,32 +95,32 @@ if (blN2Check && blRPCheck) {
             var strN1SampleName = msg['row'][intN1LookupCounter]['SampleName'].toString()
             PrintToDebugLog(7, 'N1 Sample Name:' + strN1SampleName + ' RP Sampe Name:' + strRPSampleName)
             if (strRPSampleName === strN1SampleName) {
-              PrintToDebugLog(6, 'N1 RP Sample Name Match')
+              PrintToDebugLog(7, 'N1 RP Sample Name Match')
               var strN1TargetName = msg['row'][intN1LookupCounter]['TargetName'].toString()
-              PrintToDebugLog(6, 'TargetName' + strN1TargetName)
+              PrintToDebugLog(7, 'TargetName' + strN1TargetName)
               if (strN1TargetName === 'N1') {
                 var strN1CTValue = 'Value Not Assigned'
                 strN1CTValue = msg['row'][intN1LookupCounter]['CT'].toString()
-                PrintToDebugLog(5, 'N1 RP Match')
+                PrintToDebugLog(7, 'N1 RP Match')
                 if (strN1CTValue === 'Undetermined') {
                   // Find N2 Value
-                  PrintToDebugLog(5, 'N1 Value Undetermined, check N2 next')
+                  PrintToDebugLog(7, 'N1 Value Undetermined, check N2 next')
                   for (var intN2LookupCount = 0; intN2LookupCount < getArrayOrXmlLength(msg['row']); intN2LookupCount++) {
                     var strN2SampleName = msg['row'][intN2LookupCount]['SampleName'].toString()
                     if (strN2SampleName === strN1SampleName) {
-                      PrintToDebugLog(4, 'N2 and N1 Found')
+                      PrintToDebugLog(7, 'N2 and N1 Found')
                       var strN2TargetName = msg['row'][intN2LookupCount]['TargetName'].toString()
                       if (strN2TargetName === 'N2') {
-                        PrintToDebugLog(3, 'N2 Record Found')
+                        PrintToDebugLog(7, 'N2 Record Found')
                         var strN2CTValue = 'Value Not Assigned'
                         strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
                         if (strN2CTValue === 'Undetermined') {
                           // RP Valid, N1 Undetermined, N2 Undetermined
                           // Result is NOT DETECTED
-                          PrintToDebugLog(3, 'N2 Found Undetermined')
-                          PrintToDebugLog(2, 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue:' + strN2CTValue, '')
+                          PrintToDebugLog(7, 'N2 Found Undetermined')
+                          PrintToDebugLog(5, 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue:' + strN2CTValue, '')
                           var strProcResult = 'NOT DETECTED'
-                          SendToInterfaceAndBuildTextFile(strRPSampleName, strProcResult, strN1CTValue, strN2CTValue, strRPCTValue, '')
+                          SendToInterfaceAndBuildTextFile(strRPSampleName, strProcResult, strN1CTValue, strN2CTValue, strRPCTValue, 'NOT DETECTED, RP Valid, N1 CT Detected, N2 CT Detected')
                         } else {
                           // RP Valid, N1 Undetermined, N2 NOT Undetermined
                           // HOLD
@@ -142,10 +143,10 @@ if (blN2Check && blRPCheck) {
                       for (var intN2LookupCount = 0; intN2LookupCount < getArrayOrXmlLength(msg['row']); intN2LookupCount++) {
                         var strN2SampleName = msg['row'][intN2LookupCount]['SampleName'].toString()
                         if (strN2SampleName === strN1SampleName) {
-                          PrintToDebugLog(4, 'N2 and N1 Found')
+                          PrintToDebugLog(7, 'N2 and N1 Found')
                           var strN2TargetName = msg['row'][intN2LookupCount]['TargetName'].toString()
                           if (strN2TargetName === 'N2') {
-                            PrintToDebugLog(3, 'N2 Record Found')
+                            PrintToDebugLog(7, 'N2 Record Found')
                             var strN2CTValue = 'Value Not Assigned'
                             strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
                             if (strN2CTValue === 'Undetermined') {
@@ -190,12 +191,12 @@ if (blN2Check && blRPCheck) {
         } else {
           // RP CT is not less than 32
           // HOLD
-          SendToInterfaceAndBuildTextFile(strRPSampleName, 'Invalid RP, greater than RP Cutoff', 'invalid', 'invalid', strRPCTValue, '')
+          SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'invalid', 'invalid', strRPCTValue, 'Invalid RP, greater than RP Cutoff')
         }
       } else {
         // RP CT Value Not a Number
         // HOLD
-        SendToInterfaceAndBuildTextFile(strRPSampleName, 'Invalid RP, not a number', 'invalid', 'invalid', strRPCTValue, '')
+        SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'invalid', 'invalid', strRPCTValue, 'Invalid RP, not a number')
       }
     }
   }
@@ -256,7 +257,7 @@ if (blN2Check && blRPCheck) {
                 if (strN1CTValue === 'Undetermined') {
                   PrintToDebugLog(5, 'N1 Value Undetermined')
                   // Result is NOT DETECTED
-                  PrintToDebugLog(2, 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue: NA')
+                  PrintToDebugLog(7, 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue: NA')
                   var strProcResult = 'NOT DETECTED'
                   var strCSV = "'20-" + strRPSampleName + "','" + strProcResult + "'"
                   SendToInterfaceAndBuildTextFile(strRPSampleName, strProcResult, strN1CTValue, 'NA', strRPCTValue, 'Not Detected, N2 not used')
@@ -266,10 +267,10 @@ if (blN2Check && blRPCheck) {
                     // N1 CT is a number
                     if (parseFloat(strN1CTValue) < parseFloat(intValidRPValueCutoff)) {
                     // N1 CT DETECTED - not checking N2, result DETECTED
-                      SendToInterfaceAndBuildTextFile(strRPSampleName, 'DETECTED', strN1CTValue, 'NA', strRPCTValue, 'DETECTEDm N2 not used')
+                      SendToInterfaceAndBuildTextFile(strRPSampleName, 'DETECTED', strN1CTValue, 'NA', strRPCTValue, 'DETECTED, N2 not used')
                     } else {
                     // HOLD - HIGH N1 CT Value
-                      SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, 'NA', strRPCTValue, 'RP Valid, HIGH N1 CT Value')                      
+                      SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, 'NA', strRPCTValue, 'RP Valid, HIGH N1 CT Value, N2 not used')
                     }
                   } else {
                     // CT Value is not Undertermined AND is not a valid number
@@ -285,12 +286,12 @@ if (blN2Check && blRPCheck) {
         } else {
           // RP CT is not less than 32
           // HOLD
-          SendToInterfaceAndBuildTextFile(strRPSampleName, 'Invalid RP, greater than RP Cutoff', 'invalid', 'invalid', strRPCTValue, '')
+          SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'invalid', 'invalid', strRPCTValue, 'Invalid RP, greater than RP Cutoff')
         }
       } else {
         // RP CT Value Not a Number
         // HOLD
-        SendToInterfaceAndBuildTextFile(strRPSampleName, 'Invalid RP, not a number', 'invalid', 'invalid', strRPCTValue, '')
+        SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'invalid', 'invalid', strRPCTValue, 'Invalid RP, not a number')
       }
     }
   }
@@ -332,7 +333,7 @@ if (blN2Check && blRPCheck) {
         var strProcResult = 'NOT DETECTED'
         var strCSV = "'20-" + strN1SampleName + "','" + strProcResult + "'"
         // Send Message
-        SendToInterfaceAndBuildTextFile(strN1SampleName, strProcResult, strN1CTValue, 'NA', 'NA', '')
+        SendToInterfaceAndBuildTextFile(strN1SampleName, 'NOT DETECTED', strN1CTValue, 'NA', 'NA', 'NOT DETECTED, RP not used, N2 not used')
       } else {
         // N1 not Undetermined, potential detected
         if (strN1CTValue == parseFloat(strN1CTValue)) {
@@ -408,7 +409,7 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
         " + strFileNameForDB + ",\
         " + strRPCTForDB + ",\
         " + strResultValueForDB + ",\
-        " + strInstrument + ",\
+        '" + strInstrument + "',\
         " + strCommentForDB + ");"
 
       result = dbConnMYSQL.executeUpdate(strSQL)
