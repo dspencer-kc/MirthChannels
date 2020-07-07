@@ -55,7 +55,6 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
           var strN1SampleName = msg['row'][intN1LookupCounter]['SampleName'].toString()
           PrintToDebugLog(7, 'N1 Sample Name:' + strN1SampleName + ' RP Sampe Name:' + strRPSampleName)
           if (strRPSampleName === strN1SampleName) {
-
             PrintToDebugLog(6, 'N1 RP Sample Name Match')
             var strN1TargetName = msg['row'][intN1LookupCounter]['TargetName'].toString()
             PrintToDebugLog(6, 'TargetName' + strN1TargetName)
@@ -85,18 +84,66 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
                         PrintToDebugLog(2, 'NOT DETECTED ' + strRPSampleName + ' N1CTValue:' + strN1CTValue + ' N2CTValue:' + strN2CTValue)
                         var strProcResult = 'NOT DETECTED'
 
-                        SendToInterfaceAndBuildTextFile(strRPSampleName, strProcResult)
+                        SendToInterfaceAndBuildTextFile(strRPSampleName, strProcResult, 'N1 and N2 CT Value Undetermined')
                       } else {
                         // RP Valid, N1 Undetermined, N2 NOT Undetermined
                         // HOLD
+                        SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'RP Valid, N1 CT Undetermined, N2 CT NOT Undetermined')
                       }
                     }
                   }
                 }
               } else {
-                // RP Valid, CT Value is NOT Undetermined
+                // RP Valid, N1 CT Value is NOT Undetermined
                 // Next Confirm it is a number and less than cutoff
                 // potential deteted
+                if (strN1CTValue == parseFloat(strN1CTValue)) {
+                  // N1 CT is a number
+                  if (parseFloat(strN1CTValue) < parseFloat(intValidRPValueCutoff)) {
+                    // N1 CT DETECTED, validate N2 CT
+                    // Loop to find N2 CT
+                    PrintToDebugLog(5, 'N1 Value DETECTED, check N2 next')
+                    for (var intN2LookupCount = 0; intN2LookupCount < getArrayOrXmlLength(msg['row']); intN2LookupCount++) {
+                      var strN2SampleName = msg['row'][intN2LookupCount]['SampleName'].toString()
+                      if (strN2SampleName === strN1SampleName) {
+                        PrintToDebugLog(4, 'N2 and N1 Found')
+                        var strN2TargetName = msg['row'][intN2LookupCount]['TargetName'].toString()
+                        if (strN2TargetName === 'N2') {
+                          PrintToDebugLog(3, 'N2 Record Found')
+                          var strN2CTValue = 'Value Not Assigned'
+                          strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
+                          if (strN2CTValue === 'Undetermined') {
+                            // RP Valid, N1 CT Detected, N2 CT Undetermined
+                            SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'RP Valid, N1 CT Detected, N2 CT Undetermined')
+                          } else {
+                            // RP Valid, N1 UDETECTED, N2 NOT Undetermined
+                            // COnfirm DETECTED
+                            if (strN2CTValue == parseFloat(strN2CTValue)) {
+                              // N2 CT is a number
+                              if (parseFloat(strN2CTValue) < parseFloat(intValidRPValueCutoff)) {
+                                // DETECTED
+                                SendToInterfaceAndBuildTextFile(strRPSampleName, 'DETECTED', 'RP Valid, N1 CT Detected, N2 CT Detected')
+                              } else {
+                                // HOLD HIGH N2 CT Value
+                                SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'N2 CT HIGH Value')
+                              }
+                            } else {
+                              // HOLD N1CT Detected, N2CT Value not a valid number
+                              SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'N1CT Detected, N2CT Value not a valid number')
+                            }
+                          }
+                        }
+                      }
+                    }
+                  } else {
+                    // HOLD - HIGH N1 CT Value
+                    SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'HIGH N1 CT Value')
+                  }
+                } else {
+                  // CT Value is not Undertermined AND is not a valid number
+                  // Hold
+                  SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'RP Valid, N1 CT NOT Undetermined, but is NOT a valid number')
+                }
               }
             }
           } else {
@@ -106,10 +153,13 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
       } else {
         // RP CT is not less than 32
         // HOLD
+        SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'RP CT is not less than 32')
+        
       }
     } else {
       // RP CT Value Not a Number
       // HOLD
+      SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'RP CT Value Not a Number')
     }
   }
 }
@@ -122,14 +172,17 @@ function PrintToDebugLog (intHowImportant, strDebugMsg) {
   }
 }
 
-function SendToInterfaceAndBuildTextFile(strLocalSampleName, strLocalProcResult) {
-
-  // Add 20- to front of sample name
-  // ***REMINDER TO ADJUST HERE FOR CURRENT YEAR and add logic if 20- is already there***
-  var strCSV = "'20-" + strLocalSampleName + "','" + strLocalProcResult + "'"
-
-  // Send Message
-  // DEV: router.routeMessage('Dev_CopathProc_Result', strCSV)
-  router.routeMessage('Production_CopathProc_Result', strCSV)
-  strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + ' \r\n'
+function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult, strComments) {
+  // ***???*** SHould I return strResultTextFile? variable may be outside scope of this function, need to verify
+  if (strLocalProcResult === 'NOT DETECTED') {
+    // Only Send right now if NOT DETECTED
+    // Send Message
+    // Add 20- to front of sample name
+    // ***REMINDER TO ADJUST HERE FOR CURRENT YEAR and add logic if 20- is already there***
+    var strCSV = "'20-" + strLocalSampleName + "','" + strLocalProcResult + "'"
+    // DEV: router.routeMessage('Dev_CopathProc_Result', strCSV)
+    router.routeMessage('Production_CopathProc_Result', strCSV)
+  }
+  PrintToDebugLog(2, strLocalProcResult + ' ' + strLocalProcResult)
+  strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + ' - ' + strComments + ' \r\n'
 }
