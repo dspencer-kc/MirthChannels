@@ -3,16 +3,16 @@ var intValidRPValueCutoff = 40 // If RP < this value, considered valid
 var strResultTextFile = ''
 var blRPCheck = false
 var blN2Check = false
-var strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
+var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
 var strSQL = ''
 const blDBUpload = true
-const blSendToLIS = false
+const blSendToLIS = true
 const blSaveResultTextFile = true
 const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
 const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
-const strInstrument = '7500TEST'
+const strInstrument = '7500'
 
 var strRPWell = 'NA'
 var strN1Well = 'NA'
@@ -134,7 +134,7 @@ if (blN2Check && blRPCheck) {
                         } else {
                           // RP Valid, N1 Undetermined, N2 NOT Undetermined
                           // HOLD
-                          SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD for Review', strN1CTValue, strN2CTValue, strRPCTValue, 'N1 and N2 CT Discrepancy', strRPWell, strN1Well, strN2Well)
+                          SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, strN2CTValue, strRPCTValue, 'N1 and N2 CT Discrepancy', strRPWell, strN1Well, strN2Well)
                         }
                       }
                     }
@@ -163,7 +163,7 @@ if (blN2Check && blRPCheck) {
                             var strN2Well = msg['row'][intN2LookupCount]['Well'].toString()
                             if (strN2CTValue === 'Undetermined') {
                               // RP Valid, N1 CT Detected, N2 CT Undetermined
-                              SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD for Review', strN1CTValue, strN2CTValue, strRPCTValue, 'N1 and N2 CT Discrepancy', strRPWell, strN1Well, strN2Well)
+                              SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, strN2CTValue, strRPCTValue, 'N1 and N2 CT Discrepancy', strRPWell, strN1Well, strN2Well)
                             } else {
                               // RP Valid, N1 UDETECTED, N2 NOT Undetermined
                               // COnfirm DETECTED
@@ -388,10 +388,12 @@ function PrintToDebugLog (intHowImportant, strDebugMsg) {
 function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult, strLocalN1CTValue, strLocalN2CTValue, strLocalRPCTValue, strLocalComment, strLocalRPWell, strLocalN1Well, strLocalN2Well) {
   // Add 20- to front of sample name
   // ***REMINDER TO ADJUST HERE FOR CURRENT YEAR and add logic if 20- is already there***
+  var blSentToLIS = 0
   var strCSV = "'20-" + strLocalSampleName + "','" + strLocalProcResult + "'"
 
   if (blSendToLIS && strLocalProcResult === 'NOT DETECTED') {
     router.routeMessage('Production_CopathProc_Result', strCSV)
+    blSentToLIS = 1
   }
 
   if (blSaveResultTextFile) {
@@ -425,7 +427,8 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
         N1Well,\
         N2Well,\
         RPWell,\
-        Comment)\
+        Comment,\
+        SentToLIS)\
         VALUES\
         (" + strSampleNameForDB + ",\
         " + strN1CTForDB + ",\
@@ -437,7 +440,8 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
         " + strN1WellForDB + ",\
         " + strN2WellForDB + ",\
         " + strRPWellForDB + ",\
-        " + strCommentForDB + ");"
+        " + strCommentForDB + ",\
+        " + blSentToLIS + ");"
 
       result = dbConnMYSQL.executeUpdate(strSQL)
     } catch (err) {
