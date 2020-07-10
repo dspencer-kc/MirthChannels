@@ -1,9 +1,21 @@
+// 7500
+const strInstrument = '7500'
+// 7300
+// const strInstrument = '7300'
+// 7500 start at 9
+const intLineStart = 9
+// 7300 start at 27
+// const intLineStart = 27
+// 7500
+const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+// 7300
+// var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
+
 var intDebugLevel = 5 // 11 is all messages, 1 is critical only
 var intValidRPValueCutoff = 40 // If RP < this value, considered valid
 var strResultTextFile = ''
-var blRPCheck = false
+var blRPCheck = false // Do not set checks here, it is calculated
 var blN2Check = false
-var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
 var strSQL = ''
 const blDBUpload = true
 const blSendToLIS = true
@@ -12,7 +24,6 @@ const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
 const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
-const strInstrument = '7500'
 
 var strRPWell = 'NA'
 var strN1Well = 'NA'
@@ -21,7 +32,7 @@ var strN2Well = 'NA'
 PrintToDebugLog(10, 'TestDebugLog')
 
 // Verify N2 and RP in file
-for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
+for (var intRPLookupCounter = intLineStart; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
   if (typeof(msg) == 'xml') {
     if (typeof(msg['row'][intRPLookupCounter]) == 'undefined') {
       createSegment('row', msg, intRPLookupCounter)
@@ -51,7 +62,7 @@ for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['r
 
 if (blN2Check && blRPCheck) {
   PrintToDebugLog(7, 'Running with N2 and RP')
-  for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
+  for (var intRPLookupCounter = intLineStart; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
 
     // Mirth Scaffolding
     if (typeof(msg) == 'xml') {
@@ -215,7 +226,7 @@ if (blN2Check && blRPCheck) {
 } else if (blN2Check === false && blRPCheck) {
   // Run with RP but no N2 {}
   PrintToDebugLog(7, 'Running with RP, no N2')
-  for (var intRPLookupCounter = 9; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
+  for (var intRPLookupCounter = intLineStart; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
     // Mirth Scaffolding
     strRPWell = ''
     strN1Well = ''
