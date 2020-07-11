@@ -397,74 +397,77 @@ function PrintToDebugLog (intHowImportant, strDebugMsg) {
 }
 
 function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult, strLocalN1CTValue, strLocalN2CTValue, strLocalRPCTValue, strLocalComment, strLocalRPWell, strLocalN1Well, strLocalN2Well) {
-  // Add 20- to front of sample name
-  // ***REMINDER TO ADJUST HERE FOR CURRENT YEAR and add logic if 20- is already there***
-  var blSentToLIS = 0
-  var strCSV = "'20-" + strLocalSampleName + "','" + strLocalProcResult + "'"
+  // Exclude Emtpy Sample Name
+  if (strLocalSampleName !== '') {
+    // Add 20- to front of sample name
+    // ***REMINDER TO ADJUST HERE FOR CURRENT YEAR and add logic if 20- is already there***
+    var blSentToLIS = 0
+    var strCSV = "'20-" + strLocalSampleName + "','" + strLocalProcResult + "'"
 
-  if (blSendToLIS && strLocalProcResult === 'NOT DETECTED') {
-    router.routeMessage('Production_CopathProc_Result', strCSV)
-    blSentToLIS = 1
-  }
+    if (blSendToLIS && strLocalProcResult === 'NOT DETECTED') {
+      router.routeMessage('Production_CopathProc_Result', strCSV)
+      blSentToLIS = 1
+    }
 
-  if (blSaveResultTextFile) {
-    strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + '-' + strLocalComment + ' \r\n'
-  }
+    if (blSaveResultTextFile) {
+      strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + '-' + strLocalComment + ' \r\n'
+    }
 
-  // Insert to DB
-  if (blDBUpload) {
-    try {
-      // DBConnection
-      dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
-      var strSampleNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalSampleName)
-      var strResultValueForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalProcResult)
-      var strN1CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1CTValue)
-      var strN2CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2CTValue)
-      var strRPCTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPCTValue)
-      var strFileNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('originalFilename'))
-      var strCommentForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalComment)
-      var strN1WellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1Well)
-      var strN2WellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2Well)
-      var strRPWellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPWell)
+    // Insert to DB
+    if (blDBUpload) {
+      try {
+        // DBConnection
+        dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
+        var strSampleNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalSampleName)
+        var strResultValueForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalProcResult)
+        var strN1CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1CTValue)
+        var strN2CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2CTValue)
+        var strRPCTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPCTValue)
+        var strFileNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('originalFilename'))
+        var strCommentForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalComment)
+        var strN1WellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1Well)
+        var strN2WellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2Well)
+        var strRPWellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPWell)
 
-      strSQL = "INSERT INTO UrgentProcedureTracking.tblCDCResults \
-        (SampleName, \
-        N1CTValue, \
-        N2CTValue, \
-        FileName,\
-        RPCTValue,\
-        ResultValue,\
-        Instrument,\
-        N1Well,\
-        N2Well,\
-        RPWell,\
-        Comment,\
-        SentToLIS)\
-        VALUES\
-        (" + strSampleNameForDB + ",\
-        " + strN1CTForDB + ",\
-        " + strN2CTForDB + ",\
-        " + strFileNameForDB + ",\
-        " + strRPCTForDB + ",\
-        " + strResultValueForDB + ",\
-        '" + strInstrument + "',\
-        " + strN1WellForDB + ",\
-        " + strN2WellForDB + ",\
-        " + strRPWellForDB + ",\
-        " + strCommentForDB + ",\
-        " + blSentToLIS + ");"
+        strSQL = "INSERT INTO UrgentProcedureTracking.tblCDCResults \
+          (SampleName, \
+          N1CTValue, \
+          N2CTValue, \
+          FileName,\
+          RPCTValue,\
+          ResultValue,\
+          Instrument,\
+          N1Well,\
+          N2Well,\
+          RPWell,\
+          Comment,\
+          SentToLIS)\
+          VALUES\
+          (" + strSampleNameForDB + ",\
+          " + strN1CTForDB + ",\
+          " + strN2CTForDB + ",\
+          " + strFileNameForDB + ",\
+          " + strRPCTForDB + ",\
+          " + strResultValueForDB + ",\
+          '" + strInstrument + "',\
+          " + strN1WellForDB + ",\
+          " + strN2WellForDB + ",\
+          " + strRPWellForDB + ",\
+          " + strCommentForDB + ",\
+          " + blSentToLIS + ");"
 
-      result = dbConnMYSQL.executeUpdate(strSQL)
-    } catch (err) {
-      logger.debug('ERROR- MYSQL:' + err.name + ' Error Details: ' + err + '. SQL: ' + strSQL)
-    } finally {
-      if (dbConnMYSQL) {
-        dbConnMYSQL.close()
+        result = dbConnMYSQL.executeUpdate(strSQL)
+      } catch (err) {
+        logger.debug('ERROR- MYSQL:' + err.name + ' Error Details: ' + err + '. SQL: ' + strSQL)
+      } finally {
+        if (dbConnMYSQL) {
+          dbConnMYSQL.close()
+        }
       }
     }
-  }
 
-  PrintToDebugLog(5, strSQL)
+    PrintToDebugLog(5, strSQL)
+  }
 }
 function SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString (txt) {
   if (txt == null) {
