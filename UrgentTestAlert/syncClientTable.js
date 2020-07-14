@@ -13,6 +13,7 @@ var dbConnCoPath
 var objCopathResult
 var objMYSQLResult2
 var result
+var intClientUpdateCount = 0
 
 try {
   //  MYSQL
@@ -71,7 +72,30 @@ try {
         last_updated = " + strLastUpdated + ";"
 
       objMYSQLResult2 = dbConnMYSQL.executeUpdate(strSQL)
+      // Send JSON to MAWDLIS
+      strName = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(objCopathResult.getString("name"))
+      strIntLink = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(objCopathResult.getString("intf_link"))
+      strState = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(objCopathResult.getString("state_id"))
+      strStreet = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(objCopathResult.getString("street1"))
+      strCity = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(objCopathResult.getString("city"))
+      strZip = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(objCopathResult.getString("zip"))
+      strLastUpdated = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(objCopathResult.getString("last_updated"))
+
+      var strJSONClientData = '{\
+        "intfLink": "'+ strIntLink +'", \
+        "name": "'+ strName +'",\
+        "state": "'+ strState +'",\
+        "city": "'+ strCity +'",\
+        "street1": "'+ strStreet +'",\
+        "zip": "'+ strZip +'",\
+        "lastUpdated": "'+ strLastUpdated +'"\
+          }'
+
+      router.routeMessage('OB_to_MAWDLIS', strJSONClientData)
+      intClientUpdateCount++
     } // End For
+
+  logger.debug("Client Update Completed." + intClientUpdateCount + " clients updated.")
   }
 } catch (err) {
   logger.debug("Error Name:" + err.name + " Error Details: " + err + ". SQL:" + strSQL)
