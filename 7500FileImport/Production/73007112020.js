@@ -1,15 +1,15 @@
 // 7500
-const strInstrument = '7500'
+// const strInstrument = '7500'
 // 7300
-// const strInstrument = '7300'
+const strInstrument = '7300'
 // 7500 start at 9
-const intLineStart = 9
+// const intLineStart = 9
 // 7300 start at 27
-// const intLineStart = 27
+const intLineStart = 27
 // 7500
-const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+// const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
 // 7300
-// var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
+var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
 
 var intDebugLevel = 5 // 11 is all messages, 1 is critical only
 var intValidRPValueCutoff = 40 // If RP < this value, considered valid
@@ -49,11 +49,11 @@ for (var intRPLookupCounter = intLineStart; intRPLookupCounter < getArrayOrXmlLe
     }
   }
   // Find RP Target
-  var strTargetNameForRPLookup = msg['row'][intRPLookupCounter]['TargetName'].toString()
-  if (strTargetNameForRPLookup === 'RP') {
+  var strTargetName = msg['row'][intRPLookupCounter]['TargetName'].toString()
+  if (strTargetName === 'RP') {
     blRPCheck = true
   } else {
-    if (strTargetNameForRPLookup === 'N2') {
+    if (strTargetName === 'N2') {
       blN2Check = true
     }
   }
@@ -99,44 +99,6 @@ if (blN2Check && blRPCheck) {
       PrintToDebugLog(7, 'Sample Name:' + strRPSampleName)
       var strRPCTValue = msg['row'][intRPLookupCounter]['CT'].toString()
       PrintToDebugLog(7, 'RPCTValue:' + strRPCTValue)
-
-      // Get N1 Values
-      var strN1SampleName = ''
-      var strN1CTValue = ''
-      var strN1TargetName = ''
-      for (var intN1LookupCounter = 0; intN1LookupCounter < getArrayOrXmlLength(msg['row']); intN1LookupCounter++) {
-        strN1SampleName = msg['row'][intN1LookupCounter]['SampleName'].toString()
-        PrintToDebugLog(7, 'N1 Sample Name:' + strN1SampleName + ' RP Sampe Name:' + strRPSampleName)
-        if (strRPSampleName === strN1SampleName) {
-          PrintToDebugLog(7, 'N1 RP Sample Name Match')
-          strN1TargetName = msg['row'][intN1LookupCounter]['TargetName'].toString()
-          strN1Well = msg['row'][intN1LookupCounter]['Well'].toString()
-          PrintToDebugLog(7, 'TargetName' + strN1TargetName)
-          if (strN1TargetName === 'N1') {
-            strN1CTValue = 'Value Not Assigned'
-            strN1CTValue = msg['row'][intN1LookupCounter]['CT'].toString()
-            PrintToDebugLog(7, 'N1 RP Match')
-          }
-        }
-      }
-
-      // Find N2 Values
-      var strN2SampleName = ''
-      var strN2TargetName = ''
-      var strN2CTValue = ''
-      for (var intN2LookupCount = 0; intN2LookupCount < getArrayOrXmlLength(msg['row']); intN2LookupCount++) {
-        strN2SampleName = msg['row'][intN2LookupCount]['SampleName'].toString()
-        if (strN2SampleName === strRPSampleName) {
-          PrintToDebugLog(7, 'N2 and N1 Found')
-          strN2TargetName = msg['row'][intN2LookupCount]['TargetName'].toString()
-          if (strN2TargetName === 'N2') {
-            PrintToDebugLog(7, 'N2 Record Found')
-            strN2CTValue = 'Value Not Assigned'
-            strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
-            strN2Well = msg['row'][intN2LookupCount]['Well'].toString()
-          }
-        }
-      }
 
       if (strRPCTValue == parseFloat(strRPCTValue)) {
         // RP is Number - confirm less than cutoff value
@@ -252,12 +214,12 @@ if (blN2Check && blRPCheck) {
         } else {
           // RP CT is not less than 32
           // HOLD
-          SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, strN2CTValue, strRPCTValue, 'Invalid RP, greater than RP Cutoff', strRPWell, strN1Well, strN2Well)
+          SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'invalid', 'invalid', strRPCTValue, 'Invalid RP, greater than RP Cutoff', strRPWell, strN1Well, strN2Well)
         }
       } else {
         // RP CT Value Not a Number
         // HOLD
-        SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, strN2CTValue, strRPCTValue, 'Invalid RP, not a number', strRPWell, strN1Well, strN2Well)
+        SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'invalid', 'invalid', strRPCTValue, 'Invalid RP, not a number', strRPWell, strN1Well, strN2Well)
       }
     }
   }
@@ -298,26 +260,6 @@ if (blN2Check && blRPCheck) {
       PrintToDebugLog(7, 'Sample Name:' + strRPSampleName)
       var strRPCTValue = msg['row'][intRPLookupCounter]['CT'].toString()
       PrintToDebugLog(7, 'RPCTValue:' + strRPCTValue)
-
-      // Get N1 Values
-      var strN1SampleName = ''
-      var strN1CTValue = ''
-      var strN1TargetName = ''
-      for (var intN1LookupCounter = 0; intN1LookupCounter < getArrayOrXmlLength(msg['row']); intN1LookupCounter++) {
-        strN1SampleName = msg['row'][intN1LookupCounter]['SampleName'].toString()
-        PrintToDebugLog(7, 'N1 Sample Name:' + strN1SampleName + ' RP Sampe Name:' + strRPSampleName)
-        if (strRPSampleName === strN1SampleName) {
-          PrintToDebugLog(7, 'N1 RP Sample Name Match')
-          strN1TargetName = msg['row'][intN1LookupCounter]['TargetName'].toString()
-          strN1Well = msg['row'][intN1LookupCounter]['Well'].toString()
-          PrintToDebugLog(7, 'TargetName' + strN1TargetName)
-          if (strN1TargetName === 'N1') {
-            strN1CTValue = 'Value Not Assigned'
-            strN1CTValue = msg['row'][intN1LookupCounter]['CT'].toString()
-            PrintToDebugLog(7, 'N1 RP Match')
-          }
-        }
-      }
       if (strRPCTValue == parseFloat(strRPCTValue)) {
         // RP is Number - confirm less than cutoff value
         PrintToDebugLog(10, 'RP Is a Number')
@@ -371,12 +313,12 @@ if (blN2Check && blRPCheck) {
         } else {
           // RP CT is not less than 32
           // HOLD
-          SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, 'NA', strRPCTValue, 'RP greater than RP Cutoff, N2 Not Verified', strRPWell, strN1Well, strN2Well)
+          SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'invalid', 'invalid', strRPCTValue, 'Invalid RP, greater than RP Cutoff', strRPWell, strN1Well, strN2Well)
         }
       } else {
         // RP CT Value Not a Number
         // HOLD
-        SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, 'NA', strRPCTValue, 'RP not a number, N2 not verified', strRPWell, strN1Well, strN2Well)
+        SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', 'invalid', 'invalid', strRPCTValue, 'Invalid RP, not a number', strRPWell, strN1Well, strN2Well)
       }
     }
   }
@@ -455,77 +397,74 @@ function PrintToDebugLog (intHowImportant, strDebugMsg) {
 }
 
 function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult, strLocalN1CTValue, strLocalN2CTValue, strLocalRPCTValue, strLocalComment, strLocalRPWell, strLocalN1Well, strLocalN2Well) {
-  // Exclude Emtpy Sample Name
-  if (strLocalSampleName !== '') {
-    // Add 20- to front of sample name
-    // ***REMINDER TO ADJUST HERE FOR CURRENT YEAR and add logic if 20- is already there***
-    var blSentToLIS = 0
-    var strCSV = "'20-" + strLocalSampleName + "','" + strLocalProcResult + "'"
+  // Add 20- to front of sample name
+  // ***REMINDER TO ADJUST HERE FOR CURRENT YEAR and add logic if 20- is already there***
+  var blSentToLIS = 0
+  var strCSV = "'20-" + strLocalSampleName + "','" + strLocalProcResult + "'"
 
-    if (blSendToLIS && strLocalProcResult === 'NOT DETECTED') {
-      router.routeMessage('Production_CopathProc_Result', strCSV)
-      blSentToLIS = 1
-    }
+  if (blSendToLIS && strLocalProcResult === 'NOT DETECTED') {
+    router.routeMessage('Production_CopathProc_Result', strCSV)
+    blSentToLIS = 1
+  }
 
-    if (blSaveResultTextFile) {
-      strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + '-' + strLocalComment + ' \r\n'
-    }
+  if (blSaveResultTextFile) {
+    strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + '-' + strLocalComment + ' \r\n'
+  }
 
-    // Insert to DB
-    if (blDBUpload) {
-      try {
-        // DBConnection
-        dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
-        var strSampleNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalSampleName)
-        var strResultValueForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalProcResult)
-        var strN1CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1CTValue)
-        var strN2CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2CTValue)
-        var strRPCTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPCTValue)
-        var strFileNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('originalFilename'))
-        var strCommentForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalComment)
-        var strN1WellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1Well)
-        var strN2WellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2Well)
-        var strRPWellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPWell)
+  // Insert to DB
+  if (blDBUpload) {
+    try {
+      // DBConnection
+      dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
+      var strSampleNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalSampleName)
+      var strResultValueForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalProcResult)
+      var strN1CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1CTValue)
+      var strN2CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2CTValue)
+      var strRPCTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPCTValue)
+      var strFileNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('originalFilename'))
+      var strCommentForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalComment)
+      var strN1WellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN1Well)
+      var strN2WellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalN2Well)
+      var strRPWellForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalRPWell)
 
-        strSQL = "INSERT INTO UrgentProcedureTracking.tblCDCResults \
-          (SampleName, \
-          N1CTValue, \
-          N2CTValue, \
-          FileName,\
-          RPCTValue,\
-          ResultValue,\
-          Instrument,\
-          N1Well,\
-          N2Well,\
-          RPWell,\
-          Comment,\
-          SentToLIS)\
-          VALUES\
-          (" + strSampleNameForDB + ",\
-          " + strN1CTForDB + ",\
-          " + strN2CTForDB + ",\
-          " + strFileNameForDB + ",\
-          " + strRPCTForDB + ",\
-          " + strResultValueForDB + ",\
-          '" + strInstrument + "',\
-          " + strN1WellForDB + ",\
-          " + strN2WellForDB + ",\
-          " + strRPWellForDB + ",\
-          " + strCommentForDB + ",\
-          " + blSentToLIS + ");"
+      strSQL = "INSERT INTO UrgentProcedureTracking.tblCDCResults \
+        (SampleName, \
+        N1CTValue, \
+        N2CTValue, \
+        FileName,\
+        RPCTValue,\
+        ResultValue,\
+        Instrument,\
+        N1Well,\
+        N2Well,\
+        RPWell,\
+        Comment,\
+        SentToLIS)\
+        VALUES\
+        (" + strSampleNameForDB + ",\
+        " + strN1CTForDB + ",\
+        " + strN2CTForDB + ",\
+        " + strFileNameForDB + ",\
+        " + strRPCTForDB + ",\
+        " + strResultValueForDB + ",\
+        '" + strInstrument + "',\
+        " + strN1WellForDB + ",\
+        " + strN2WellForDB + ",\
+        " + strRPWellForDB + ",\
+        " + strCommentForDB + ",\
+        " + blSentToLIS + ");"
 
-        result = dbConnMYSQL.executeUpdate(strSQL)
-      } catch (err) {
-        logger.debug('ERROR- MYSQL:' + err.name + ' Error Details: ' + err + '. SQL: ' + strSQL)
-      } finally {
-        if (dbConnMYSQL) {
-          dbConnMYSQL.close()
-        }
+      result = dbConnMYSQL.executeUpdate(strSQL)
+    } catch (err) {
+      logger.debug('ERROR- MYSQL:' + err.name + ' Error Details: ' + err + '. SQL: ' + strSQL)
+    } finally {
+      if (dbConnMYSQL) {
+        dbConnMYSQL.close()
       }
     }
-
-    PrintToDebugLog(5, strSQL)
   }
+
+  PrintToDebugLog(5, strSQL)
 }
 function SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString (txt) {
   if (txt == null) {

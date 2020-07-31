@@ -1,15 +1,15 @@
 // 7500
-const strInstrument = '7500'
+// const strInstrument = '7500'
 // 7300
-// const strInstrument = '7300'
+const strInstrument = '7300'
 // 7500 start at 9
-const intLineStart = 9
+// const intLineStart = 9
 // 7300 start at 27
-// const intLineStart = 27
+const intLineStart = 27
 // 7500
-const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+// const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
 // 7300
-// var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
+var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
 
 var intDebugLevel = 5 // 11 is all messages, 1 is critical only
 var intValidRPValueCutoff = 40 // If RP < this value, considered valid
