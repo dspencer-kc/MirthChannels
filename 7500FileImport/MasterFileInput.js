@@ -1,3 +1,5 @@
+const strMODE = 'DEV'
+
 // 7500
 const strInstrument = '7500'
 // 7300
@@ -6,9 +8,16 @@ const strInstrument = '7500'
 const intLineStart = 9
 // 7300 start at 27
 // const intLineStart = 27
-// 7500
-const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
+
 // Dev
+
+if (strMODE === 'DEV') {
+  strOutputPath = strDevOutputPath
+} else {
+  // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
+}
 // const strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 // 7300
 // var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
@@ -20,8 +29,8 @@ var strMAWDLISResult = ''
 var blRPCheck = false // Do not set checks here, it is calculated
 var blN2Check = false
 var strSQL = ''
-const blDBUpload = true
-const blSendToLIS = true
+const blDBUpload = false
+const blSendToLIS = false
 const blSaveResultTextFile = true
 const blSendToMAWDLIS = true
 const strMYSQLUserName = configurationMap.get('MYSQLUserName')
@@ -484,7 +493,6 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
       // RPTN20-Z4998.CV,NOT DETECTED,200728_nCoVptntRun_17_D_CW_data.txt,7500
       strMAWDLISResult = strResultTextFile + strLocalSampleName + ',' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + ' \r\n'
     }
-
 
     // Insert to DB
     if (blDBUpload) {
