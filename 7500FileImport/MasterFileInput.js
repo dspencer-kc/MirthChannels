@@ -491,7 +491,7 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
 
     if (blSendToMAWDLIS) {
       // RPTN20-Z4998.CV,NOT DETECTED,200728_nCoVptntRun_17_D_CW_data.txt,7500
-      strMAWDLISResult = strResultTextFile + strLocalSampleName + ',' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + ' \r\n'
+      strMAWDLISResult = strMAWDLISResult + strLocalSampleName + ',' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + ' \r\n'
     }
 
     // Insert to DB
