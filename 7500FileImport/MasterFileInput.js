@@ -16,6 +16,7 @@ const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result
 var intDebugLevel = 5 // 11 is all messages, 1 is critical only
 var intValidRPValueCutoff = 40 // If RP < this value, considered valid
 var strResultTextFile = ''
+var strMAWDLISResult = ''
 var blRPCheck = false // Do not set checks here, it is calculated
 var blN2Check = false
 var strSQL = ''
@@ -27,6 +28,7 @@ const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
 const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
+const strMAWDLISMirthChannel = 'OB_MAWDLIS_CDC_Plate_Result'
 
 var strRPWell = 'NA'
 var strN1Well = 'NA'
@@ -451,8 +453,7 @@ if (blSaveResultTextFile) {
 }
 
 if (blSendToMAWDLIS) {
-  var strFileName = strOutputPath + Date.now() + sourceMap.get('originalFilename')
-  FileUtil.write(strFileName, true, strResultTextFile)
+  router.routeMessage(strMAWDLISMirthChannel, strMAWDLISResult)
 }
 
 // return(strResultTextFile)
@@ -478,6 +479,12 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
     if (blSaveResultTextFile) {
       strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + '-' + strLocalComment + ' \r\n'
     }
+
+    if (blSendToMAWDLIS) {
+      // RPTN20-Z4998.CV,NOT DETECTED,200728_nCoVptntRun_17_D_CW_data.txt,7500
+      strMAWDLISResult = strResultTextFile + strLocalSampleName + ',' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + ' \r\n'
+    }
+
 
     // Insert to DB
     if (blDBUpload) {
