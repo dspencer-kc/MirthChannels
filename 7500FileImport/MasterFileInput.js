@@ -7,9 +7,9 @@ const intLineStart = 9
 // 7300 start at 27
 // const intLineStart = 27
 // 7500
-// const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
 // Dev
-const strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
+// const strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 // 7300
 // var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
 
