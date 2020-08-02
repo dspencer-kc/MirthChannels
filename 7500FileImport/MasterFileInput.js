@@ -1,4 +1,4 @@
-const strMODE = 'DEV'
+// const strMODE = 'DEV'
 
 // 7500
 const strInstrument = '7500'
@@ -8,16 +8,16 @@ const strInstrument = '7500'
 const intLineStart = 9
 // 7300 start at 27
 // const intLineStart = 27
-var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+// const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
 const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 
 // Dev
 
-if (strMODE === 'DEV') {
-  strOutputPath = strDevOutputPath
-} else {
-  // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
-}
+// if (strMODE === 'DEV') {
+//  strOutputPath = strDevOutputPath
+// } else {
+//  // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
+// }
 // const strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 // 7300
 // var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
