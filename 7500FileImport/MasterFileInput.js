@@ -1,23 +1,31 @@
-const strMODE = 'DEV'
+const blDBUpload = false
+const blSendToLIS = false
+const blSaveResultTextFile = true
+const blSendToMAWDLIS = true
+const strMAWDLISMirthChannel = 'OB_MAWDLIS_CDC_Plate_Result'
+
+// const strMODE = 'DEV'
 
 // 7500
-const strInstrument = '7500'
+// const strInstrument = '7500'
 // 7300
-// const strInstrument = '7300'
+const strInstrument = '7300'
+
 // 7500 start at 9
-const intLineStart = 9
+// const intLineStart = 9
 // 7300 start at 27
-// const intLineStart = 27
-var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
-const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
+const intLineStart = 27
+// var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+const strOutputPath = '/media/windowsshare/procedureinterface/7300/Dev/Result/Result_'
+// const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 
 // Dev
 
-if (strMODE === 'DEV') {
-  strOutputPath = strDevOutputPath
-} else {
+// if (strMODE === 'DEV') {
+//   strOutputPath = strDevOutputPath
+// } else {
   // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
-}
+// }
 // const strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 // 7300
 // var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
@@ -29,15 +37,11 @@ var strMAWDLISResult = ''
 var blRPCheck = false // Do not set checks here, it is calculated
 var blN2Check = false
 var strSQL = ''
-const blDBUpload = false
-const blSendToLIS = false
-const blSaveResultTextFile = true
-const blSendToMAWDLIS = true
 const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
 const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
-const strMAWDLISMirthChannel = 'OB_MAWDLIS_CDC_Plate_Result'
+
 
 var strRPWell = 'NA'
 var strN1Well = 'NA'
@@ -462,7 +466,8 @@ if (blSaveResultTextFile) {
 }
 
 if (blSendToMAWDLIS) {
-  router.routeMessage(strMAWDLISMirthChannel, strMAWDLISResult)
+//  router.routeMessage(strMAWDLISMirthChannel, strMAWDLISResult)
+  FileUtil.write(strFileName + 'MAWDLIS', true, strMAWDLISResult)
 }
 
 // return(strResultTextFile)
@@ -491,7 +496,12 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
 
     if (blSendToMAWDLIS) {
       // RPTN20-Z4998.CV,NOT DETECTED,200728_nCoVptntRun_17_D_CW_data.txt,7500
-      strMAWDLISResult = strMAWDLISResult + strLocalSampleName + ',' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + ' \r\n'
+      // Confirm Sample Name is correct format, will need to add .CV
+      
+      strMAWDLISResult = strMAWDLISResult + strLocalSampleName + '.CV,' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + '\n'
+      if (blSendToMAWDLIS && strLocalSampleName.match(/\d\d-Z\d{1,}$/)) {
+        router.routeMessage(strMAWDLISMirthChannel, strLocalSampleName + '.CV,' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + '\n')
+      }
     }
 
     // Insert to DB
