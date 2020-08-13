@@ -5,6 +5,7 @@ const blSendToMAWDLIS = true
 const strMAWDLISMirthChannel = 'OB_MAWDLIS_CDC_Plate_Result'
 const intValidRPValueCutoff = 40 // If RP < this value, considered valid
 const intDebugLevel = 5 // 11 is all messages, 1 is critical only
+// const strMODE = 'DEV'
 
 // const strMODE = 'DEV'
 // 7500
@@ -24,6 +25,16 @@ const strOutputPath = '/media/windowsshare/procedureinterface/7300/Dev/Result/Re
 //   strOutputPath = strDevOutputPath
 // } else {
   // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
+// const intLineStart = 27
+// const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
+const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
+
+// Dev
+
+// if (strMODE === 'DEV') {
+//  strOutputPath = strDevOutputPath
+// } else {
+//  // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
 // }
 // const strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 // 7300
