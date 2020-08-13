@@ -3,14 +3,14 @@ const blSendToLIS = false
 const blSaveResultTextFile = true
 const blSendToMAWDLIS = true
 const strMAWDLISMirthChannel = 'OB_MAWDLIS_CDC_Plate_Result'
+const intValidRPValueCutoff = 40 // If RP < this value, considered valid
+const intDebugLevel = 5 // 11 is all messages, 1 is critical only
 
 // const strMODE = 'DEV'
-
 // 7500
 // const strInstrument = '7500'
 // 7300
 const strInstrument = '7300'
-
 // 7500 start at 9
 // const intLineStart = 9
 // 7300 start at 27
@@ -20,7 +20,6 @@ const strOutputPath = '/media/windowsshare/procedureinterface/7300/Dev/Result/Re
 // const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 
 // Dev
-
 // if (strMODE === 'DEV') {
 //   strOutputPath = strDevOutputPath
 // } else {
@@ -30,8 +29,6 @@ const strOutputPath = '/media/windowsshare/procedureinterface/7300/Dev/Result/Re
 // 7300
 // var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
 
-var intDebugLevel = 5 // 11 is all messages, 1 is critical only
-var intValidRPValueCutoff = 40 // If RP < this value, considered valid
 var strResultTextFile = ''
 var strMAWDLISResult = ''
 var blRPCheck = false // Do not set checks here, it is calculated
@@ -41,7 +38,6 @@ const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
 const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
-
 
 var strRPWell = 'NA'
 var strN1Well = 'NA'
