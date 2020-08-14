@@ -3,46 +3,35 @@ const blSendToLIS = false
 const blSaveResultTextFile = true
 const blSendToMAWDLIS = true
 const strMAWDLISMirthChannel = 'OB_MAWDLIS_CDC_Plate_Result'
-const intValidRPValueCutoff = 40 // If RP < this value, considered valid
-const intDebugLevel = 5 // 11 is all messages, 1 is critical only
-// const strMODE = 'DEV'
 
 // const strMODE = 'DEV'
+
 // 7500
 // const strInstrument = '7500'
 // 7300
 const strInstrument = '7300'
+
 // 7500 start at 9
 // const intLineStart = 9
 // 7300 start at 27
-<<<<<<< HEAD
 const intLineStart = 27
 // var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
 const strOutputPath = '/media/windowsshare/procedureinterface/7300/Dev/Result/Result_'
 // const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 
 // Dev
+
 // if (strMODE === 'DEV') {
 //   strOutputPath = strDevOutputPath
 // } else {
   // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
-=======
-// const intLineStart = 27
-// const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
-const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
-
-// Dev
-
-// if (strMODE === 'DEV') {
-//  strOutputPath = strDevOutputPath
-// } else {
-//  // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
->>>>>>> 875866b75c5536cfff80623231924bef4c020332
 // }
 // const strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 // 7300
 // var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
 
+var intDebugLevel = 5 // 11 is all messages, 1 is critical only
+var intValidRPValueCutoff = 40 // If RP < this value, considered valid
 var strResultTextFile = ''
 var strMAWDLISResult = ''
 var blRPCheck = false // Do not set checks here, it is calculated
@@ -52,6 +41,7 @@ const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
 const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
+
 
 var strRPWell = 'NA'
 var strN1Well = 'NA'
@@ -503,11 +493,14 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
     if (blSaveResultTextFile) {
       strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + '-' + strLocalComment + ' \r\n'
     }
-    // REGEX to match 20-Z12335
-    if (blSendToMAWDLIS && strLocalSampleName.match(/\d\d-Z\d{1,}$/)) {
-      router.routeMessage(strMAWDLISMirthChannel, strLocalSampleName + '.CV,' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + '\n')
-      if (blSaveResultTextFile) {
-        strMAWDLISResult = strMAWDLISResult + strLocalSampleName + '.CV,' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + '\n'
+
+    if (blSendToMAWDLIS) {
+      // RPTN20-Z4998.CV,NOT DETECTED,200728_nCoVptntRun_17_D_CW_data.txt,7500
+      // Confirm Sample Name is correct format, will need to add .CV
+      
+      strMAWDLISResult = strMAWDLISResult + strLocalSampleName + ',' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + '\n'
+      if (blSendToMAWDLIS && ) {
+        router.routeMessage(strMAWDLISMirthChannel, strLocalSampleName + ',' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + '\n')
       }
     }
 

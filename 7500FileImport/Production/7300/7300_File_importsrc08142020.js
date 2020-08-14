@@ -1,13 +1,3 @@
-const blDBUpload = false
-const blSendToLIS = false
-const blSaveResultTextFile = true
-const blSendToMAWDLIS = true
-const strMAWDLISMirthChannel = 'OB_MAWDLIS_CDC_Plate_Result'
-const intValidRPValueCutoff = 40 // If RP < this value, considered valid
-const intDebugLevel = 5 // 11 is all messages, 1 is critical only
-// const strMODE = 'DEV'
-
-// const strMODE = 'DEV'
 // 7500
 // const strInstrument = '7500'
 // 7300
@@ -15,39 +5,21 @@ const strInstrument = '7300'
 // 7500 start at 9
 // const intLineStart = 9
 // 7300 start at 27
-<<<<<<< HEAD
 const intLineStart = 27
-// var strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
-const strOutputPath = '/media/windowsshare/procedureinterface/7300/Dev/Result/Result_'
-// const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
-
-// Dev
-// if (strMODE === 'DEV') {
-//   strOutputPath = strDevOutputPath
-// } else {
-  // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
-=======
-// const intLineStart = 27
+// 7500
 // const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
-const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
-
-// Dev
-
-// if (strMODE === 'DEV') {
-//  strOutputPath = strDevOutputPath
-// } else {
-//  // Continue Logic to set all variables based off of mode.  Case Statement Issues in Mirth
->>>>>>> 875866b75c5536cfff80623231924bef4c020332
-// }
-// const strOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 // 7300
-// var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
+var strOutputPath = '/media/windowsshare/procedureinterface/7300/Result/Result_'
 
+var intDebugLevel = 5 // 11 is all messages, 1 is critical only
+var intValidRPValueCutoff = 40 // If RP < this value, considered valid
 var strResultTextFile = ''
-var strMAWDLISResult = ''
 var blRPCheck = false // Do not set checks here, it is calculated
 var blN2Check = false
 var strSQL = ''
+const blDBUpload = true
+const blSendToLIS = true
+const blSaveResultTextFile = true
 const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
@@ -475,11 +447,6 @@ if (blSaveResultTextFile) {
   FileUtil.write(strFileName, true, strResultTextFile)
 }
 
-if (blSendToMAWDLIS) {
-//  router.routeMessage(strMAWDLISMirthChannel, strMAWDLISResult)
-  FileUtil.write(strFileName + 'MAWDLIS', true, strMAWDLISResult)
-}
-
 // return(strResultTextFile)
 function PrintToDebugLog (intHowImportant, strDebugMsg) {
   if (intDebugLevel > intHowImportant) {
@@ -502,13 +469,6 @@ function SendToInterfaceAndBuildTextFile (strLocalSampleName, strLocalProcResult
 
     if (blSaveResultTextFile) {
       strResultTextFile = strResultTextFile + strLocalSampleName + ': ' + strLocalProcResult + '-' + strLocalComment + ' \r\n'
-    }
-    // REGEX to match 20-Z12335
-    if (blSendToMAWDLIS && strLocalSampleName.match(/\d\d-Z\d{1,}$/)) {
-      router.routeMessage(strMAWDLISMirthChannel, strLocalSampleName + '.CV,' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + '\n')
-      if (blSaveResultTextFile) {
-        strMAWDLISResult = strMAWDLISResult + strLocalSampleName + '.CV,' + strLocalProcResult + ',' + $('originalFilename') + ',' + strInstrument + '\n'
-      }
     }
 
     // Insert to DB
