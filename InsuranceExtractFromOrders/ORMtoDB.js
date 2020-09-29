@@ -42,7 +42,6 @@ function UploadToDB
           Client, \
           DOS, \
           OrderID, \
-          ORDERID, \
           ADDRESS, \
           CITY, \
           STATE, \
