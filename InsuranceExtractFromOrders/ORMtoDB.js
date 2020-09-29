@@ -52,7 +52,7 @@ function UploadToDB
           SSN, \
           Relationshiship, \
           Phone, \
-          Insurance Address, \
+          InsuranceAddress, \
           InsuranceCity, \
           InsuranceState, \
           InsuranceZIP, \
@@ -60,13 +60,13 @@ function UploadToDB
           InsuranceGroupNumber, \
           InsurancePolicyNumber, \
           SecondaryInsuranceName, \
-          Secondary Insurance Address, \
-          Secondary InsuranceCity, \
-          Secondary InsuranceState, \
-          Secondary InsuranceZIP, \
-          Secondary InsuranceGroupName, \
-          Secondary InsuranceGroupNumber, \
-          Secondary InsurancePolicyNumber, \
+          SecondaryInsuranceAddress, \
+          SecondaryInsuranceCity, \
+          SecondaryInsuranceState, \
+          SecondaryInsuranceZIP, \
+          SecondaryInsuranceGroupName, \
+          SecondaryInsuranceGroupNumber, \
+          SecondaryInsurancePolicyNumber, \
           SubmittingPhysicianNPI, \
           SubmittingPhysicianFName, \
           SubmittingPhysicianLName, \
