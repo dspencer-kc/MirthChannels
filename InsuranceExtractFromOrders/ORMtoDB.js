@@ -12,7 +12,11 @@ $('SubmittingPhysicianNPI'), $('SubmittingPhysicianFName'), $('SubmittingPhysici
 
 var strFileNameForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString($('originalFilename'))
 
-function UploadToDB (strLocalLname, strLocalFname, strLocalDOB, strLocalSex, strLocalInsuranceName, strLocalClient, strLocalDOS,strLocalORDERID) {
+function UploadToDB 
+(strLocalLname, strLocalFname, strLocalDOB, strLocalSex, strLocalInsuranceName, strLocalClient, strLocalDOS, strLocalORDERID, strADDRESS, strCITY, strSTATE, strZIP, strGuarantor, strSSN,
+  strRelationship, strPhone, strInsuranceAddress, strInsuranceCity, strInsuranceState, strInsuranceZip, strInsuranceGroupName, strInsurancePolicyNumber, strSecondaryInsuranceName,
+  strSecondaryInsuranceAddress, strSecondaryInsuranceCity, strSecondaryInsuranceState, strSecondaryInsuranceZip, strSecondaryInsuranceGroupName, strSecondaryInsurancePolicyNumber,
+  strSubmittingPhysicianNPI, strSubmittingPhysicianFName, strSubmittingPhysicianLName, strDXCodes, strOrderDate, strInsuranceGroupNumber, strSecondaryInsuranceGroupNumber) {
   var blValid = true
   var blDBUpload = true
 
@@ -28,7 +32,8 @@ function UploadToDB (strLocalLname, strLocalFname, strLocalDOB, strLocalSex, str
         // var strN2CTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalSex)
         // var strRPCTForDB = SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalInsuranceName)
 
-        strSQL = "INSERT INTO UrgentProcedureTracking.tblOrderInsuranceExtract02 \
+
+        strSQL = "INSERT INTO UrgentProcedureTracking.tblOrderInsuranceExtract03 \
           (LName, \
           FName, \
           DOB, \
@@ -36,7 +41,37 @@ function UploadToDB (strLocalLname, strLocalFname, strLocalDOB, strLocalSex, str
           InsuranceName, \
           Client, \
           DOS, \
-          OrderID)\
+          OrderID, \
+          ORDERID, \
+          ADDRESS, \
+          CITY, \
+          STATE, \
+          ZIP, \
+          BillType, \
+          Guarantor, \
+          SSN, \
+          Relationshiship, \
+          Phone, \
+          Insurance Address, \
+          InsuranceCity, \
+          InsuranceState, \
+          InsuranceZIP, \
+          InsuranceGroupName, \
+          InsuranceGroupNumber, \
+          InsurancePolicyNumber, \
+          SecondaryInsuranceName, \
+          Secondary Insurance Address, \
+          Secondary InsuranceCity, \
+          Secondary InsuranceState, \
+          Secondary InsuranceZIP, \
+          Secondary InsuranceGroupName, \
+          Secondary InsuranceGroupNumber, \
+          Secondary InsurancePolicyNumber, \
+          SubmittingPhysicianNPI, \
+          SubmittingPhysicianFName, \
+          SubmittingPhysicianLName, \
+          OrderDate, \
+          DXCodes) \
           VALUES\
           (" + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalLname) + ",\
           " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalFname) + ",\
@@ -45,7 +80,36 @@ function UploadToDB (strLocalLname, strLocalFname, strLocalDOB, strLocalSex, str
           " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalInsuranceName) + ",\
           " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalClient) + ",\
           " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalDOS) + ",\
-          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalORDERID) + ");"
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strLocalORDERID) + ",\
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strADDRESS) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strCITY) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSTATE) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strZIP) + ", \
+          NULL, \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strGuarantor) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSSN) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strRelationship) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strPhone) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strInsuranceAddress) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strInsuranceCity) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strInsuranceState) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strInsuranceZip) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strInsuranceGroupName) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strInsuranceGroupNumber) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strInsurancePolicyNumber) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSecondaryInsuranceName) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSecondaryInsuranceAddress) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSecondaryInsuranceCity) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSecondaryInsuranceState) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSecondaryInsuranceZip) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSecondaryInsuranceGroupName) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSecondaryInsuranceGroupNumber) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSecondaryInsurancePolicyNumber) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSubmittingPhysicianNPI) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSubmittingPhysicianFName) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strSubmittingPhysicianLName) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strOrderDate) + ", \
+          " + SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(strDXCodes) + " );"
 
         result = dbConnMYSQL.executeUpdate(strSQL)
         PrintToDebugLog(5, strSQL)

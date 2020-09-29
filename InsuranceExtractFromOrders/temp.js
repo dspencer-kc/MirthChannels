@@ -4,3 +4,6 @@ UploadToDB(strLName, strFName, strDOB, strSex, strInsuranceName, strClient, strD
     strRelationship, strPhone, strInsuranceAddress, strInsuranceCity, strInsuranceState, strInsuranceZip, strInsuranceGroupName, strInsurancePolicyNumber, strSecondaryInsuranceName, 
     strSecondaryInsuranceAddress, strSecondaryInsuranceCity, strSecondaryInsuranceState, strSecondaryInsuranceZip, strSecondaryInsuranceGroupName, strSecondaryInsurancePolicyNumber, 
     strSubmittingPhysicianNPI, strSubmittingPhysicianFName, strSubmittingPhysicianLName, strDXCodes, strOrderDate, strInsuranceGroupNumber, strSecondaryInsuranceGroupNumber) 
+
+
+    
