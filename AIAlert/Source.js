@@ -24,7 +24,7 @@ var blAlertTriggered = '0'
 var msg = <HL7Message/>;
 
 if (intDebugLevel > 5) {
-  	  logger.debug('Urgent Test Alert Start')
+  	  logger.debug('AI Test Alert Start')
 }
 
 strSQL = "select ( \
@@ -40,6 +40,10 @@ strSQL = "select ( \
   where DTInserted > DATE_ADD(NOW(), INTERVAL - " + strPrevHoursForAlert + " hour) and \
   TestResult like 'Not Detected' \
   ) as PotentialNotDistributed;"
+
+  if (intDebugLevel > 9) {
+  	  logger.debug(strSQL)
+}
 
 try {
 
@@ -62,9 +66,8 @@ try {
         msg.MSH['MSH.3']['MSH.3.1'] = 'Alert Triggered'
         var blAlertTriggered = '1'
         var strEmailSubject = 'MAWD Urgent Result Available, Hospital: ' + strAlertGroup
-        var strMessageText = 'AI potentially not running based on ' + PotentialNotDistributed + ' NOT Detected instrument results that are potentially not distributed in the last ' + strPrevHoursForAlert + 'hours. \
-          Threshold set at: ' + AcceptableNotDistributed + ' \
-          SQL Statement: ' + strSQL
+        var strMessageText = 'AI potentially not running based on ' + PotentialNotDistributed + ' NOT Detected instrument results that are potentially not distributed in the last ' + strPrevHoursForAlert + ' hours. \
+          Threshold set at: ' + AcceptableNotDistributed + '.'
 
         // Send Email
         logger.debug(strMessageText)
