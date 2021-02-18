@@ -15,10 +15,15 @@ const blDynamicallyDetectN2orRPFromFIle = false
 // const strInstrument = '7500'
 // 7300
 const strInstrument = 'QS7'
+
+// QS7 Column names from Caughrons file:
+// Well,WellPosition,Omit,SampleName,TargetName,Task,Reporter,Quencher,CT
+// From Kelli's file:
+// Well,WellPosition,SampleName,TargetName,Task,Reporter,Quencher,CT,CtThreshold
 // 7500 start at 9
 // const intLineStart = 9
 // 7300 start at 27
-var intLineStart = 2
+var intLineStart = 42
 // const strOutputPath = '/media/windowsshare/procedureinterface/7500/Result/Result_'
 // const strDevOutputPath = '/media/windowsshare/procedureinterface/7500/Dev/Result/Result_'
 
@@ -51,6 +56,9 @@ PrintToDebugLog(10, 'TestDebugLog')
 
 PrintToDebugLog(3, 'Start of processing ' + connectorMessage.getMessageId())
 // Calculate Line Start
+/*
+// Calculate Line Start
+
 for (var intLineStartLookupCounter = intLineStart; intLineStartLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
   if (typeof(msg) == 'xml') {
     if (typeof(msg['row'][intLineStartLookupCounter]) == 'undefined') {
@@ -70,13 +78,23 @@ for (var intLineStartLookupCounter = intLineStart; intLineStartLookupCounter < g
   // Find RP Target
   var strResultStartFound = msg['row'][intLineStartLookupCounter]['Well'].toString()
   if (strResultStartFound === '[Results]') {
-    PrintToDebugLog(1, 'Calculated Start Row: ' & intLineStartLookupCounter.toString())
+    PrintToDebugLog(1, intLineStartLookupCounter.toString())
     intLineStart = intLineStartLookupCounter
     intLineStartLookupCounter = getArrayOrXmlLength(msg['row'])
   }
 }
 // End Start Check.
 
+  // Find RP Target
+  var strResultStartFound = msg['row'][intLineStartLookupCounter]['WellPosition'].toString()
+  if (strResultStartFound === '[Results]') {
+    PrintToDebugLog(1, 'Calculated Start Row: ' & intLineStartLookupCounter.toString())
+    intLineStart = intLineStartLookupCounter
+    intLineStartLookupCounter = getArrayOrXmlLength(msg['row'])
+  }
+}
+// End Start Check.
+  */
 if (blDynamicallyDetectN2orRPFromFIle) {
   // Verify N2 and RP in file
   for (var intRPLookupCounter = intLineStart; intRPLookupCounter < getArrayOrXmlLength(msg['row']); intRPLookupCounter++) {
@@ -149,7 +167,7 @@ if (blN2Check && blRPCheck) {
       // Confirm RP is valid
       // Get Sample Name
       strRPSampleName = msg['row'][intRPLookupCounter]['SampleName'].toString()
-      strRPWell = msg['row'][intRPLookupCounter]['Well'].toString()
+      strRPWell = msg['row'][intRPLookupCounter]['WellPosition'].toString()
       PrintToDebugLog(7, 'Sample Name:' + strRPSampleName)
       var strRPCTValue = msg['row'][intRPLookupCounter]['CT'].toString()
       PrintToDebugLog(7, 'RPCTValue:' + strRPCTValue)
@@ -164,7 +182,7 @@ if (blN2Check && blRPCheck) {
         if (strRPSampleName === strN1SampleName) {
           PrintToDebugLog(7, 'N1 RP Sample Name Match')
           strN1TargetName = msg['row'][intN1LookupCounter]['TargetName'].toString()
-          strN1Well = msg['row'][intN1LookupCounter]['Well'].toString()
+          strN1Well = msg['row'][intN1LookupCounter]['WellPosition'].toString()
           PrintToDebugLog(7, 'TargetName' + strN1TargetName)
           if (strN1TargetName === 'N1' || strN1TargetName === 'COVID') {
             strN1CTValue = 'Value Not Assigned'
@@ -187,7 +205,7 @@ if (blN2Check && blRPCheck) {
             PrintToDebugLog(7, 'N2 Record Found')
             strN2CTValue = 'Value Not Assigned'
             strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
-            strN2Well = msg['row'][intN2LookupCount]['Well'].toString()
+            strN2Well = msg['row'][intN2LookupCount]['WellPosition'].toString()
           }
         }
       }
@@ -208,7 +226,7 @@ if (blN2Check && blRPCheck) {
             if (strRPSampleName === strN1SampleName) {
               PrintToDebugLog(7, 'N1 RP Sample Name Match')
               var strN1TargetName = msg['row'][intN1LookupCounter]['TargetName'].toString()
-              strN1Well = msg['row'][intN1LookupCounter]['Well'].toString()
+              strN1Well = msg['row'][intN1LookupCounter]['WellPosition'].toString()
               PrintToDebugLog(7, 'TargetName' + strN1TargetName)
               if (strN1TargetName === 'N1' || strN1TargetName === 'COVID') {
                 var strN1CTValue = 'Value Not Assigned'
@@ -226,7 +244,7 @@ if (blN2Check && blRPCheck) {
                         PrintToDebugLog(7, 'N2 Record Found')
                         var strN2CTValue = 'Value Not Assigned'
                         strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
-                        strN2Well = msg['row'][intN2LookupCount]['Well'].toString()
+                        strN2Well = msg['row'][intN2LookupCount]['WellPosition'].toString()
                         if (strN2CTValue === 'Undetermined') {
                           // RP Valid, N1 Undetermined, N2 Undetermined
                           // Result is NOT DETECTED
@@ -263,7 +281,7 @@ if (blN2Check && blRPCheck) {
                             PrintToDebugLog(7, 'N2 Record Found')
                             var strN2CTValue = 'Value Not Assigned'
                             strN2CTValue = msg['row'][intN2LookupCount]['CT'].toString()
-                            var strN2Well = msg['row'][intN2LookupCount]['Well'].toString()
+                            var strN2Well = msg['row'][intN2LookupCount]['WellPosition'].toString()
                             if (strN2CTValue === 'Undetermined') {
                               // RP Valid, N1 CT Detected, N2 CT Undetermined
                               SendToInterfaceAndBuildTextFile(strRPSampleName, 'HOLD', strN1CTValue, strN2CTValue, strRPCTValue, 'N1 and N2 CT Discrepancy', strRPWell, strN1Well, strN2Well)
@@ -349,7 +367,7 @@ if (blN2Check && blRPCheck) {
       // Confirm RP is valid
       // Get Sample Name
       strRPSampleName = msg['row'][intRPLookupCounter]['SampleName'].toString()
-      strRPWell = msg['row'][intRPLookupCounter]['Well'].toString()
+      strRPWell = msg['row'][intRPLookupCounter]['WellPosition'].toString()
       PrintToDebugLog(7, 'Sample Name:' + strRPSampleName)
       var strRPCTValue = msg['row'][intRPLookupCounter]['CT'].toString()
       PrintToDebugLog(7, 'RPCTValue:' + strRPCTValue)
@@ -365,7 +383,7 @@ if (blN2Check && blRPCheck) {
         if (strRPSampleName === strN1SampleName) {
           PrintToDebugLog(7, 'N1 RP Sample Name Match')
           strN1TargetName = msg['row'][intN1LookupCounter]['TargetName'].toString()
-          strN1Well = msg['row'][intN1LookupCounter]['Well'].toString()
+          strN1Well = msg['row'][intN1LookupCounter]['WellPosition'].toString()
           PrintToDebugLog(7, 'TargetName' + strN1TargetName)
           if (strN1TargetName === 'N1' || strN1TargetName === 'COVID') {
             strN1CTValue = 'Value Not Assigned'
@@ -472,7 +490,7 @@ if (blN2Check && blRPCheck) {
     if (strN1TargetName === 'N1' || strN1TargetName === 'COVID') {
       var strN1CTValue = 'Value Not Assigned'
       strN1CTValue = msg['row'][intRowCounter]['CT'].toString()
-      strN1Well = msg['row'][intRowCounter]['Well'].toString()
+      strN1Well = msg['row'][intRowCounter]['WellPosition'].toString()
       PrintToDebugLog(5, 'N1 RP Match')
       if (strN1CTValue === 'Undetermined') {
         PrintToDebugLog(5, 'N1 Value Undetermined')
