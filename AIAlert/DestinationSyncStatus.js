@@ -10,12 +10,12 @@ try {
   var strBatchNo = $('strBatchNo')
   var strAlertTriggered = $('strAlertTriggered')
 
-  strSQL = "UPDATE UrgentProcedureTracking.tblAIAlertBatches \
+  strSQL = "UPDATE UrgentProcedureTracking.tblLISAlertBatches  \
   SET \
   Status = '" + strStatus + "', \
   DTAlertSent = NOW(), \
-  blAlertSent = "+ strAlertTriggered +", \
-  WHERE `AlertBatch` = (SELECT LAST_INSERT_ID()));"
+  blAlertSent = "+ strAlertTriggered +" \
+  WHERE `AlertBatch` = (SELECT LAST_INSERT_ID());"
 
 
   dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
