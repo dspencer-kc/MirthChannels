@@ -97,11 +97,10 @@ try {
   // Get ID that was just inserted
 
   strSQL = " \
-    /*qryResultCountByPortalID*/ \
-    SELECT PortalID, Test, COUNT(CaseNo) as ResultsAvailable, AlertBatch, ClientName \
-    FROM tblTestResult \
-    WHERE (AlertBatch = (SELECT LAST_INSERT_ID()) AND ClientName NOT LIKE '') \
-    GROUP BY PortalID, Test, AlertBatch, ClientName;"
+    SELECT AlertBatch \
+    FROM tblLISAlertBatches \
+    WHERE (AlertBatch = (SELECT LAST_INSERT_ID())) \
+    GROUP BY AlertBatch;"
     
     objMYLSQLResult = dbConnMYSQL.executeCachedQuery(strSQL)
 

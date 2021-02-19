@@ -3,6 +3,7 @@ const strMYSQLUserName = configurationMap.get('MYSQLUserName')
 const strMYSQLPassword = configurationMap.get('MYSQLPassword')
 const strMYSQLJDBCConnection = configurationMap.get('URGENTPROCTRACKINGMYSQLJDBCConnection')
 const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
+var intDebugLevel = 10
 
 try {
 
@@ -15,7 +16,11 @@ try {
   Status = '" + strStatus + "', \
   DTAlertSent = NOW(), \
   blAlertSent = "+ strAlertTriggered +" \
-  WHERE `AlertBatch` = (SELECT LAST_INSERT_ID());"
+  WHERE `AlertBatch` = (" + strBatchNo + ");"
+
+  if (intDebugLevel > 4) {
+  	  logger.debug(strSQL)
+}
 
 
   dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
