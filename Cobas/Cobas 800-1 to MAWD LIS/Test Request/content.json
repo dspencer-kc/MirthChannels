@@ -1,0 +1,9 @@
+{
+  "jsonrpc": "2.0",
+  "method": "domainOperation",
+  "id": "6010b54019ec2d477ca0ffdc",
+  "params": [
+    [${message.transformedData}]
+  ]
+}
+
