@@ -1,0 +1,316 @@
+<channel version="3.10.1">
+  <id>1ad185f0-a0f4-48f2-bacb-ee6d1574cbcd</id>
+  <nextMetaDataId>5</nextMetaDataId>
+  <name>ClientPlateResulttoMAWDLIS_new</name>
+  <description>IB:8665 OB:http://10.128.0.11:50045</description>
+  <revision>7</revision>
+  <sourceConnector version="3.10.1">
+    <metaDataId>0</metaDataId>
+    <name>sourceConnector</name>
+    <properties class="com.mirth.connect.connectors.tcp.TcpReceiverProperties" version="3.10.1">
+      <pluginProperties/>
+      <listenerConnectorProperties version="3.10.1">
+        <host>0.0.0.0</host>
+        <port>8665</port>
+      </listenerConnectorProperties>
+      <sourceConnectorProperties version="3.10.1">
+        <responseVariable>Auto-generate (Before processing)</responseVariable>
+        <respondAfterProcessing>true</respondAfterProcessing>
+        <processBatch>false</processBatch>
+        <firstResponse>true</firstResponse>
+        <processingThreads>1</processingThreads>
+        <resourceIds class="linked-hash-map">
+          <entry>
+            <string>Default Resource</string>
+            <string>[Default Resource]</string>
+          </entry>
+        </resourceIds>
+        <queueBufferSize>1000</queueBufferSize>
+      </sourceConnectorProperties>
+      <transmissionModeProperties class="com.mirth.connect.plugins.mllpmode.MLLPModeProperties">
+        <pluginPointName>MLLP</pluginPointName>
+        <startOfMessageBytes>0B</startOfMessageBytes>
+        <endOfMessageBytes>1C0D</endOfMessageBytes>
+        <useMLLPv2>false</useMLLPv2>
+        <ackBytes>06</ackBytes>
+        <nackBytes>15</nackBytes>
+        <maxRetries>2</maxRetries>
+      </transmissionModeProperties>
+      <serverMode>true</serverMode>
+      <remoteAddress></remoteAddress>
+      <remotePort></remotePort>
+      <overrideLocalBinding>false</overrideLocalBinding>
+      <reconnectInterval>5000</reconnectInterval>
+      <receiveTimeout>0</receiveTimeout>
+      <bufferSize>65536</bufferSize>
+      <maxConnections>10</maxConnections>
+      <keepConnectionOpen>true</keepConnectionOpen>
+      <dataTypeBinary>false</dataTypeBinary>
+      <charsetEncoding>DEFAULT_ENCODING</charsetEncoding>
+      <respondOnNewConnection>0</respondOnNewConnection>
+      <responseAddress></responseAddress>
+      <responsePort></responsePort>
+    </properties>
+    <transformer version="3.10.1">
+      <elements/>
+      <inboundTemplate encoding="base64">MjAtWjQ3MzEsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoyMC1aNDcyNyxERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMjAtWjQ4MDgsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA0OTgsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA0OTksTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MDgsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MDksTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTAsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTEsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTIsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTMsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTQsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTUsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTYsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTcsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTgsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MTksTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjAsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjEsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjIsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjMsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjQsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjUsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjYsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjcsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjgsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MjksTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzAsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzEsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzIsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzMsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzQsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzUsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzYsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzcsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzgsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1MzksTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1NDAsSE9MRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQxLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQyLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQzLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQ0LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQ1LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQ2LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQ3LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQ4LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTQ5LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTUwLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTUxLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTUyLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTUzLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTU0LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTU1LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTU2LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTU3LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTU4LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTU5LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTYwLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTYxLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTYyLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTYzLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTY0LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTY1LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTY2LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTY3LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTY4LEhPTEQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU2OSxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU3MCxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU3MSxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU3MixOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU3MyxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU3NCxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU3NSxIT0xELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1NzYsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1NzcsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1NzgsTk9UIERFVEVDVEVELDIwMDgwM19uQ29WUHRudFJ1bl8xNl9MX0pXX0RTMy5jc3YsNzMwMAoxMDA1NzksSE9MRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTgwLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTgxLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTgyLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTgzLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTg0LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTg1LE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNTg2LEhPTEQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU4NyxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU4OCxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU4OSxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU5MCxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDU5MSxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCkxTLE5PVCBERVRFQ1RFRCwyMDA4MDNfbkNvVlB0bnRSdW5fMTZfTF9KV19EUzMuY3N2LDczMDAKMTAwNjE2LEhPTEQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDYxNyxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDYxOCxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCjEwMDYwMCxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCk5UQyxOT1QgREVURUNURUQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCm5DT1YgUE9TLEhPTEQsMjAwODAzX25Db1ZQdG50UnVuXzE2X0xfSldfRFMzLmNzdiw3MzAwCg==</inboundTemplate>
+      <outboundTemplate encoding="base64"></outboundTemplate>
+      <inboundDataType>JSON</inboundDataType>
+      <outboundDataType>JSON</outboundDataType>
+      <inboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+        <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+          <splitType>JavaScript</splitType>
+          <batchScript></batchScript>
+        </batchProperties>
+      </inboundProperties>
+      <outboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+        <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+          <splitType>JavaScript</splitType>
+          <batchScript></batchScript>
+        </batchProperties>
+      </outboundProperties>
+    </transformer>
+    <filter version="3.10.1">
+      <elements/>
+    </filter>
+    <transportName>TCP Listener</transportName>
+    <mode>SOURCE</mode>
+    <enabled>true</enabled>
+    <waitForPrevious>true</waitForPrevious>
+  </sourceConnector>
+  <destinationConnectors>
+    <connector version="3.10.1">
+      <metaDataId>3</metaDataId>
+      <name>Send Result To AI</name>
+      <properties class="com.mirth.connect.connectors.http.HttpDispatcherProperties" version="3.10.1">
+        <pluginProperties/>
+        <destinationConnectorProperties version="3.10.1">
+          <queueEnabled>true</queueEnabled>
+          <sendFirst>true</sendFirst>
+          <retryIntervalMillis>10000</retryIntervalMillis>
+          <regenerateTemplate>false</regenerateTemplate>
+          <retryCount>5</retryCount>
+          <rotate>true</rotate>
+          <includeFilterTransformer>false</includeFilterTransformer>
+          <threadCount>1</threadCount>
+          <threadAssignmentVariable></threadAssignmentVariable>
+          <validateResponse>false</validateResponse>
+          <resourceIds class="linked-hash-map">
+            <entry>
+              <string>Default Resource</string>
+              <string>[Default Resource]</string>
+            </entry>
+          </resourceIds>
+          <queueBufferSize>1000</queueBufferSize>
+          <reattachAttachments>true</reattachAttachments>
+        </destinationConnectorProperties>
+        <host>http://10.128.0.59:50045</host>
+        <useProxyServer>false</useProxyServer>
+        <proxyAddress></proxyAddress>
+        <proxyPort></proxyPort>
+        <method>post</method>
+        <headers class="linked-hash-map"/>
+        <parameters class="linked-hash-map"/>
+        <useHeadersVariable>false</useHeadersVariable>
+        <headersVariable></headersVariable>
+        <useParametersVariable>false</useParametersVariable>
+        <parametersVariable></parametersVariable>
+        <responseXmlBody>false</responseXmlBody>
+        <responseParseMultipart>true</responseParseMultipart>
+        <responseIncludeMetadata>false</responseIncludeMetadata>
+        <responseBinaryMimeTypes>application/.*(?&lt;!json|xml)$|image/.*|video/.*|audio/.*</responseBinaryMimeTypes>
+        <responseBinaryMimeTypesRegex>true</responseBinaryMimeTypesRegex>
+        <multipart>false</multipart>
+        <useAuthentication>false</useAuthentication>
+        <authenticationType>Basic</authenticationType>
+        <usePreemptiveAuthentication>false</usePreemptiveAuthentication>
+        <username></username>
+        <password></password>
+        <content>{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;resultOperation&quot;, &quot;params&quot;: [${message.transformedData}],&quot;id&quot;: &quot;${UUID}&quot;}</content>
+        <contentType>application/json</contentType>
+        <dataTypeBinary>false</dataTypeBinary>
+        <charset>UTF-8</charset>
+        <socketTimeout>30000</socketTimeout>
+      </properties>
+      <transformer version="3.10.1">
+        <elements/>
+        <inboundTemplate encoding="base64"></inboundTemplate>
+        <outboundTemplate encoding="base64">ewoJImFwaUtleSI6ICI2M2YxZDBkZS04M2I0LTRiZjEtYjJmNy0zOGE4MGI4ZWJhYzAiLAoJInJlc3VsdE9wZXJhdGlvbiI6IHsKCQkidGFyZ2V0IjogImNvdmlkUmVzdWx0IiwKCQkibWV0aG9kIjogInVwZGF0ZUNPVklEUmVzdWx0IiwKCQkicmVzdWx0cyI6IG51bGwKCX0KfQo=</outboundTemplate>
+        <inboundDataType>JSON</inboundDataType>
+        <outboundDataType>JSON</outboundDataType>
+        <inboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </inboundProperties>
+        <outboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </outboundProperties>
+      </transformer>
+      <responseTransformer version="3.10.1">
+        <elements>
+          <com.mirth.connect.plugins.javascriptstep.JavaScriptStep version="3.10.1">
+            <name>Handle API Error response</name>
+            <sequenceNumber>0</sequenceNumber>
+            <enabled>true</enabled>
+            <script>if (msg.result.status &amp;&amp; msg.result.status == &apos;ERROR&apos;) {
+	var errorMessage = JSON.stringify(msg.result.message);
+	throw errorMessage;
+}</script>
+          </com.mirth.connect.plugins.javascriptstep.JavaScriptStep>
+        </elements>
+        <inboundTemplate encoding="base64"></inboundTemplate>
+        <outboundTemplate encoding="base64"></outboundTemplate>
+        <inboundDataType>JSON</inboundDataType>
+        <outboundDataType>JSON</outboundDataType>
+        <inboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </inboundProperties>
+        <outboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </outboundProperties>
+      </responseTransformer>
+      <filter version="3.10.1">
+        <elements/>
+      </filter>
+      <transportName>HTTP Sender</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>false</enabled>
+      <waitForPrevious>true</waitForPrevious>
+    </connector>
+    <connector version="3.10.1">
+      <metaDataId>4</metaDataId>
+      <name>Destination 1</name>
+      <properties class="com.mirth.connect.connectors.js.JavaScriptDispatcherProperties" version="3.10.1">
+        <pluginProperties/>
+        <destinationConnectorProperties version="3.10.1">
+          <queueEnabled>false</queueEnabled>
+          <sendFirst>false</sendFirst>
+          <retryIntervalMillis>10000</retryIntervalMillis>
+          <regenerateTemplate>false</regenerateTemplate>
+          <retryCount>0</retryCount>
+          <rotate>false</rotate>
+          <includeFilterTransformer>false</includeFilterTransformer>
+          <threadCount>1</threadCount>
+          <threadAssignmentVariable></threadAssignmentVariable>
+          <validateResponse>false</validateResponse>
+          <resourceIds class="linked-hash-map">
+            <entry>
+              <string>Default Resource</string>
+              <string>[Default Resource]</string>
+            </entry>
+          </resourceIds>
+          <queueBufferSize>1000</queueBufferSize>
+          <reattachAttachments>false</reattachAttachments>
+        </destinationConnectorProperties>
+        <script>//test</script>
+      </properties>
+      <transformer version="3.10.1">
+        <elements/>
+        <inboundDataType>JSON</inboundDataType>
+        <outboundDataType>JSON</outboundDataType>
+        <inboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </inboundProperties>
+        <outboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </outboundProperties>
+      </transformer>
+      <responseTransformer version="3.10.1">
+        <elements/>
+        <inboundDataType>JSON</inboundDataType>
+        <outboundDataType>JSON</outboundDataType>
+        <inboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </inboundProperties>
+        <outboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </outboundProperties>
+      </responseTransformer>
+      <filter version="3.10.1">
+        <elements/>
+      </filter>
+      <transportName>JavaScript Writer</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>true</enabled>
+      <waitForPrevious>false</waitForPrevious>
+    </connector>
+  </destinationConnectors>
+  <preprocessingScript>// Modify the message variable below to pre process data
+return message;</preprocessingScript>
+  <postprocessingScript>// This script executes once after a message has been processed
+// Responses returned from here will be stored as &quot;Postprocessor&quot; in the response map
+return;</postprocessingScript>
+  <deployScript>// This script executes once when the channel is deployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</deployScript>
+  <undeployScript>// This script executes once when the channel is undeployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</undeployScript>
+  <properties version="3.10.1">
+    <clearGlobalChannelMap>true</clearGlobalChannelMap>
+    <messageStorageMode>DEVELOPMENT</messageStorageMode>
+    <encryptData>false</encryptData>
+    <removeContentOnCompletion>false</removeContentOnCompletion>
+    <removeOnlyFilteredOnCompletion>false</removeOnlyFilteredOnCompletion>
+    <removeAttachmentsOnCompletion>false</removeAttachmentsOnCompletion>
+    <initialState>STARTED</initialState>
+    <storeAttachments>true</storeAttachments>
+    <metaDataColumns>
+      <metaDataColumn>
+        <name>SOURCE</name>
+        <type>STRING</type>
+        <mappingName>mirth_source</mappingName>
+      </metaDataColumn>
+      <metaDataColumn>
+        <name>TYPE</name>
+        <type>STRING</type>
+        <mappingName>mirth_type</mappingName>
+      </metaDataColumn>
+    </metaDataColumns>
+    <attachmentProperties version="3.10.1">
+      <type>None</type>
+      <properties/>
+    </attachmentProperties>
+    <resourceIds class="linked-hash-map">
+      <entry>
+        <string>Default Resource</string>
+        <string>[Default Resource]</string>
+      </entry>
+    </resourceIds>
+  </properties>
+  <exportData>
+    <metadata>
+      <enabled>true</enabled>
+      <lastModified>
+        <time>1634157102928</time>
+        <timezone>America/Chicago</timezone>
+      </lastModified>
+      <pruningSettings>
+        <archiveEnabled>true</archiveEnabled>
+      </pruningSettings>
+    </metadata>
+  </exportData>
+</channel>

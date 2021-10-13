@@ -1,0 +1,675 @@
+<channel version="3.10.1">
+  <id>27964123-ef69-4aac-a2c5-8c8adf8581b5</id>
+  <nextMetaDataId>5</nextMetaDataId>
+  <name>QS7_File_Import_new</name>
+  <description>IB:/media/windowsshare/procedureinterface/7Flex/new_interface</description>
+  <revision>250</revision>
+  <sourceConnector version="3.10.1">
+    <metaDataId>0</metaDataId>
+    <name>sourceConnector</name>
+    <properties class="com.mirth.connect.connectors.file.FileReceiverProperties" version="3.10.1">
+      <pluginProperties/>
+      <pollConnectorProperties version="3.10.1">
+        <pollingType>INTERVAL</pollingType>
+        <pollOnStart>true</pollOnStart>
+        <pollingFrequency>5000</pollingFrequency>
+        <pollingHour>0</pollingHour>
+        <pollingMinute>0</pollingMinute>
+        <cronJobs/>
+        <pollConnectorPropertiesAdvanced>
+          <weekly>true</weekly>
+          <inactiveDays>
+            <boolean>false</boolean>
+            <boolean>false</boolean>
+            <boolean>false</boolean>
+            <boolean>false</boolean>
+            <boolean>false</boolean>
+            <boolean>false</boolean>
+            <boolean>false</boolean>
+            <boolean>false</boolean>
+          </inactiveDays>
+          <dayOfMonth>1</dayOfMonth>
+          <allDay>true</allDay>
+          <startingHour>8</startingHour>
+          <startingMinute>0</startingMinute>
+          <endingHour>17</endingHour>
+          <endingMinute>0</endingMinute>
+        </pollConnectorPropertiesAdvanced>
+      </pollConnectorProperties>
+      <sourceConnectorProperties version="3.10.1">
+        <responseVariable>Auto-generate (Destinations completed)</responseVariable>
+        <respondAfterProcessing>true</respondAfterProcessing>
+        <processBatch>false</processBatch>
+        <firstResponse>false</firstResponse>
+        <processingThreads>4</processingThreads>
+        <resourceIds class="linked-hash-map">
+          <entry>
+            <string>Default Resource</string>
+            <string>[Default Resource]</string>
+          </entry>
+        </resourceIds>
+        <queueBufferSize>1000</queueBufferSize>
+      </sourceConnectorProperties>
+      <scheme>FILE</scheme>
+      <host>/media/windowsshare/procedureinterface/7Flex/new_interface</host>
+      <fileFilter>*.txt</fileFilter>
+      <regex>false</regex>
+      <directoryRecursion>false</directoryRecursion>
+      <ignoreDot>true</ignoreDot>
+      <anonymous>true</anonymous>
+      <username>anonymous</username>
+      <password>anonymous</password>
+      <timeout>10000</timeout>
+      <secure>true</secure>
+      <passive>true</passive>
+      <validateConnection>true</validateConnection>
+      <afterProcessingAction>MOVE</afterProcessingAction>
+      <moveToDirectory>/media/windowsshare/procedureinterface/7Flex/new_archive</moveToDirectory>
+      <moveToFileName>${originalFilename}_${DATE}_${SYSTIME}</moveToFileName>
+      <errorReadingAction>NONE</errorReadingAction>
+      <errorResponseAction>MOVE</errorResponseAction>
+      <errorMoveToDirectory>/media/windowsshare/procedureinterface/7Flex/new_error</errorMoveToDirectory>
+      <errorMoveToFileName>${originalFilename}</errorMoveToFileName>
+      <checkFileAge>true</checkFileAge>
+      <fileAge>2000</fileAge>
+      <fileSizeMinimum>5</fileSizeMinimum>
+      <fileSizeMaximum>90000</fileSizeMaximum>
+      <ignoreFileSizeMaximum>false</ignoreFileSizeMaximum>
+      <sortBy>date</sortBy>
+      <binary>false</binary>
+      <charsetEncoding>DEFAULT_ENCODING</charsetEncoding>
+    </properties>
+    <transformer version="3.10.1">
+      <elements>
+        <com.mirth.connect.plugins.javascriptstep.JavaScriptStep version="3.10.1">
+          <name>ResultsToTextFile</name>
+          <sequenceNumber>0</sequenceNumber>
+          <enabled>true</enabled>
+          <script>var RPValueCutoff = 40
+//var blSendToLIS=true;
+var blSaveResultTextFile=true;
+var blSendToMAWDLIS = true;
+var strOutputPath = &apos;/media/windowsshare/procedureinterface/7Flex/new_archive/Result_&apos;
+const strMAWDLISMirthChannel = &apos;OB_MAWDLIS_CDC_Plate_Result&apos;
+var debug = true
+
+var outboundMsg=
+{
+  &quot;apiKey&quot; : &quot;63f1d0de-83b4-4bf1-b2f7-38a80b8ebac0&quot;,
+  &quot;resultOperation&quot; : {
+    &quot;target&quot; : &quot;covidResult&quot;,
+    &quot;method&quot; : &quot;updateCOVIDResult&quot;,
+    &quot;results&quot; : [
+    ]
+  }
+}
+
+
+//STEP 1 : parse msg[&apos;row&apos;] XML to JSON to JS Object
+//STEP 2 : find offset in file based on where key WellPosition equals the string Well Position
+//STEP 3 : splice Object at offset
+//STEP 4 : double checks the offset and splice above ,if any rows have a bad sample name delete them
+//STEP 5 : Start building our Object &apos;SampleObjects&apos; structure, set the key [SampleName] [TargetName] = key [CT] and key [SampleName] [TargetName]+&apos;Well&apos; = key [WellPosition]
+//STEP 6 : check for null values if so set value to &apos;Not Found&apos; ,send to EvalCase function for each SampleName grouping
+
+///////////////////////////////////////////////////////////////////////////////////
+//STEP 1 : 
+//parse msg[&apos;row&apos;] XML to JSON to JS Object
+if(debug){logger.info(&quot;STEP 1&quot;)}
+var keys = {};
+Object.keys(msg[&apos;row&apos;]).forEach(function(item) {keys[item]= JSON.parse(XmlUtil.toJson(msg[&apos;row&apos;][item]))[&apos;row&apos;]})
+
+//STEP 1 Validate: break on bad offset
+if(Object.keys(keys).length==0){throw(&apos;STEP 1 Validate: Bad Object Parse&apos;)}
+if(debug){logger.info(&quot;STEP 1 Validation Good&quot;)}
+///////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////
+//STEP 2 : 
+//	find offset in file based on where key WellPosition equal the string Well Position
+if(debug){logger.info(&quot;STEP 2&quot;)}
+var offset=0;
+Object.keys(keys).forEach(function(item) {
+	keys[item][&apos;WellPosition&apos;] = keys[item][&apos;WellPosition&apos;]||&apos;&apos;
+	if(keys[item][&apos;WellPosition&apos;]==&apos;Well Position&apos;){
+		offset=parseInt(item)+1
+	}
+});
+
+//STEP 2 Validate: break on bad offset
+if(offset==0){throw(&apos;STEP 2 Validate: Bad Offset&apos;)}
+if(debug){logger.info(&quot;STEP 2 Validation Good&quot;)}
+///////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////
+//STEP 3 :
+//	splice Object at offset
+if(debug){logger.info(&quot;STEP 3&quot;)}
+Object.keys(keys).forEach(function(item) {if(parseInt(item)&lt;parseInt(offset)){delete keys[item]}})
+
+//STEP 3 Validate: break if splice removes everything
+if(Object.keys(keys).length==0){throw(&apos;STEP 3 Validate: Bad Splice&apos;)}
+if(debug){logger.info(&quot;STEP 3 Validation Good&quot;)}
+///////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////
+//STEP 4 :
+//	double checks the offset and splice above ,if any rows have a bad sample name delete them
+//  	create the SampleObjects key [SampleName]
+if(debug){logger.info(&quot;STEP 4&quot;)}
+//var badkeylist=[];
+var goodkeylist=[];
+var SampleObjects=[];
+Object.keys(keys).forEach(function(item) {
+	if(debug){
+		logger.info(&apos;4.1&apos;+JSON.stringify(keys))	
+		logger.info(&apos;4.2&apos;+JSON.stringify(keys[item]))	
+		logger.info(&apos;4.3&apos;+JSON.stringify(keys[item][&apos;SampleName&apos;]))	
+	}
+	if (keys[item] === undefined){}
+	else if (keys[item][&apos;SampleName&apos;] === undefined || keys[item][&apos;SampleName&apos;] === null){
+		delete keys[item]
+	}&#xd;	else if (keys[item][&apos;SampleName&apos;].length == 0 || keys[item][&apos;SampleName&apos;] == &apos;Sample Name&apos;){
+		//badkeylist.push(keys[item][&apos;SampleName&apos;]);
+		delete keys[item]
+	}
+	else {
+		SampleObjects[keys[item][&apos;SampleName&apos;]]= {&apos;test&apos;:&apos;test&apos;};
+		if (!goodkeylist.includes(keys[item][&apos;SampleName&apos;])){
+			goodkeylist.push(keys[item][&apos;SampleName&apos;]);
+		}
+	}
+})
+
+//STEP 4 Validate: break if less then 2 good rows found, 2 instead of 1 to prevent incorrect column order from processing further
+if(debug){logger.info(&apos;LENGTH: &apos;+goodkeylist.length+&apos; &apos;+JSON.stringify(goodkeylist))}
+if(goodkeylist.length&lt;2){throw(&apos;STEP 4 Validate: No Good Key Values&apos;)}
+if(debug){logger.info(&quot;STEP 4 Validation Good&quot;)}
+///////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////
+//STEP 5 : 
+//	Start building our Object &apos;SampleObjects&apos; structure
+//		for each valid key
+//			set the key [SampleName] [TargetName] = key [CT]
+//			set the key [SampleName] [TargetName]+&apos;Well&apos; = key [WellPosition]
+if(debug){logger.info(&quot;STEP 5&quot;)}
+Object.keys(keys).forEach(function(item) {
+  var objName = keys[item][&apos;SampleName&apos;]
+  
+  var objKey  = keys[item][&apos;TargetName&apos;]
+  var objVal  = keys[item][&apos;CT&apos;]
+  if(objKey &amp;&amp; objVal){
+	  if(objKey.toString().length&gt;0 &amp;&amp; objVal.toString().length&gt;0){
+	  	 SampleObjects[objName][objKey]=objVal
+	  }
+  }
+  
+  var objKey2  = keys[item][&apos;TargetName&apos;]+&apos;Well&apos;
+  var objVal2  = keys[item][&apos;WellPosition&apos;]
+  if(objKey &amp;&amp; objVal){
+	  if(objKey2.toString().length&gt;0 &amp;&amp; objVal2.toString().length&gt;0){
+	  	SampleObjects[objName][objKey2]=objVal2
+	  }
+  }
+});
+
+//STEP 5 Validate: break if SampleObjects is empty
+if(Object.keys(SampleObjects).length==0){throw(&apos;STEP 5 Validate: SampleObjects is Empty&apos;)}
+if(debug){logger.info(&quot;STEP 5 Validation Good&quot;)}
+///////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////
+//STEP 6 : 
+//	check for null values if so set value to &apos;Not Found&apos;
+//	send to EvalCase function for each SampleName grouping
+//	push results to text file
+if(debug){logger.info(&quot;STEP 6&quot;)}
+var strResultTextFile=[];
+var strMAWDLISResult=[];
+Object.keys(SampleObjects).forEach(function(item) { 
+	var n1 = SampleObjects[item][&apos;N1&apos;]||&apos;Not Found&apos;
+	var n2 = SampleObjects[item][&apos;N2&apos;]||&apos;Not Found&apos;
+	var rp = SampleObjects[item][&apos;RP&apos;]||&apos;Not Found&apos;
+
+	var results=EvalCovidCase(n1,n2,rp,RPValueCutoff)
+	SampleObjects[item][&apos;result&apos;] = results[&apos;result&apos;]
+	SampleObjects[item][&apos;comment&apos;]  = results[&apos;comment&apos;]
+	
+	var result = SampleObjects[item][&apos;result&apos;]||&apos;&apos;
+	var comment = SampleObjects[item][&apos;comment&apos;]||&apos;&apos;
+	var rpWell = SampleObjects[item][&apos;RPWell&apos;]||&apos;&apos;
+	var n1Well = SampleObjects[item][&apos;N1Well&apos;]||&apos;&apos;
+	var n2Well = SampleObjects[item][&apos;N2Well&apos;]||&apos;&apos;
+
+	strResultTextFile.push(item + &apos;: &apos; + result + &apos;-&apos; + comment+&apos; Msg ID:&apos; + channelName + &apos;_&apos; + connectorMessage.getMessageId())
+	strMAWDLISResult.push({&apos;reportNo&apos;:item,&apos;result&apos;:result})
+})
+//STEP 6 Validate: break if no results found in strResultTextFile
+if(strResultTextFile.length==0){throw(&apos;STEP 6 Validate: strResultTextFile is Empty&apos;)}
+if(debug){logger.info(&quot;STEP 6 Validation Good&quot;)}
+///////////////////////////////////////////////////////////////////////////////////
+
+
+if (blSaveResultTextFile) {
+	var strFileName = strOutputPath + Date.now() + sourceMap.get(&apos;originalFilename&apos;)
+	FileUtil.write(strFileName, true, strResultTextFile.join(&apos;\r\n&apos;))
+}
+
+
+if (blSendToMAWDLIS) {
+ tmp[&apos;resultOperation&apos;][&apos;results&apos;]=strMAWDLISResult
+ tmp[&apos;resultOperation&apos;][&apos;send&apos;]=true
+}
+
+//ADD INSERT</script>
+        </com.mirth.connect.plugins.javascriptstep.JavaScriptStep>
+      </elements>
+      <inboundTemplate encoding="base64">KiBCbG9jayBUeXBlID0gOTYtV2VsbCBCbG9jayAoMC4ybUwpCiogQ2FsaWJyYXRpb24gQmFja2dyb3VuZCBpcyBleHBpcmVkICA9IE5vCiogQ2FsaWJyYXRpb24gQmFja2dyb3VuZCBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gTm9ybWFsaXphdGlvbiBGQU0tUk9YIGlzIGV4cGlyZWQgPSBObwoqIENhbGlicmF0aW9uIE5vcm1hbGl6YXRpb24gRkFNLVJPWCBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gTm9ybWFsaXphdGlvbiBWSUMtUk9YIGlzIGV4cGlyZWQgPSBObwoqIENhbGlicmF0aW9uIE5vcm1hbGl6YXRpb24gVklDLVJPWCBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gUHVyZSBEeWUgQ1k1IGlzIGV4cGlyZWQgPSBObwoqIENhbGlicmF0aW9uIFB1cmUgRHllIENZNSBwZXJmb3JtZWQgb24gPSAwNy0xMi0yMDIxCiogQ2FsaWJyYXRpb24gUHVyZSBEeWUgRkFNIGlzIGV4cGlyZWQgPSBObwoqIENhbGlicmF0aW9uIFB1cmUgRHllIEZBTSBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gUHVyZSBEeWUgSk9FIGlzIGV4cGlyZWQgPSBObwoqIENhbGlicmF0aW9uIFB1cmUgRHllIEpPRSBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gUHVyZSBEeWUgTkVEIGlzIGV4cGlyZWQgPSBObwoqIENhbGlicmF0aW9uIFB1cmUgRHllIE5FRCBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gUHVyZSBEeWUgUk9YIGlzIGV4cGlyZWQgPSBObwoqIENhbGlicmF0aW9uIFB1cmUgRHllIFJPWCBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gUHVyZSBEeWUgU1lCUiBpcyBleHBpcmVkID0gTm8KKiBDYWxpYnJhdGlvbiBQdXJlIER5ZSBTWUJSIHBlcmZvcm1lZCBvbiA9IDEwLTA2LTIwMjEKKiBDYWxpYnJhdGlvbiBQdXJlIER5ZSBUQU1SQSBpcyBleHBpcmVkID0gTm8KKiBDYWxpYnJhdGlvbiBQdXJlIER5ZSBUQU1SQSBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gUHVyZSBEeWUgVklDIGlzIGV4cGlyZWQgPSBObwoqIENhbGlicmF0aW9uIFB1cmUgRHllIFZJQyBwZXJmb3JtZWQgb24gPSAxMC0wNi0yMDIxCiogQ2FsaWJyYXRpb24gUk9JIGlzIGV4cGlyZWQgID0gTm8KKiBDYWxpYnJhdGlvbiBST0kgcGVyZm9ybWVkIG9uID0gMTAtMDYtMjAyMQoqIENhbGlicmF0aW9uIFVuaWZvcm1pdHkgaXMgZXhwaXJlZCAgPSBObwoqIENhbGlicmF0aW9uIFVuaWZvcm1pdHkgcGVyZm9ybWVkIG9uID0gMTAtMDYtMjAyMQoqIENoZW1pc3RyeSA9IFRBUU1BTgoqIERhdGUgQ3JlYXRlZCA9IDIwMjEtMDctMTIgMTQ6MjY6MTIgUE0gQ0RUCiogRXhwZXJpbWVudCBCYXJjb2RlID0gTkEKKiBFeHBlcmltZW50IENvbW1lbnQgPSBOQQoqIEV4cGVyaW1lbnQgRmlsZSBOYW1lID0gRDpcQXBwbGllZCBCaW9zeXN0ZW1zXFF1YW50U3R1ZGlvIDYgYW5kIDcgRmxleCBTb2Z0d2FyZVxVc2VyIEZpbGVzXGV4cGVyaW1lbnRzXFImRFwyMTEwMDZfbkNvVl9UYXJnZXRDb21wYXJpc29uX0pEXzIuZWRzCiogRXhwZXJpbWVudCBOYW1lID0gMjExMDA2X25Db1ZfVGFyZ2V0Q29tcGFyaXNvbl9KRF8yCiogRXhwZXJpbWVudCBSdW4gRW5kIFRpbWUgPSAyMDIxLTEwLTA2IDExOjM5OjIzIEFNIENEVAoqIEV4cGVyaW1lbnQgVHlwZSA9IFN0YW5kYXJkIEN1cnZlCiogSW5zdHJ1bWVudCBOYW1lID0gN0ZsZXgtQQoqIEluc3RydW1lbnQgU2VyaWFsIE51bWJlciA9IDI3ODg3MzE0MwoqIEluc3RydW1lbnQgVHlwZSA9IFF1YW50U3R1ZGlvKFRNKSA3IEZsZXggU3lzdGVtCiogUGFzc2l2ZSBSZWZlcmVuY2UgPSAKKiBRdWFudGlmaWNhdGlvbiBDeWNsZSBNZXRob2QgPSBDdAoqIFNpZ25hbCBTbW9vdGhpbmcgT24gPSB0cnVlCiogU3RhZ2UvIEN5Y2xlIHdoZXJlIEFuYWx5c2lzIGlzIHBlcmZvcm1lZCA9IFN0YWdlIDIsIFN0ZXAgMgoqIFVzZXIgTmFtZSA9IE5BCgpbUmVzdWx0c10KV2VsbAlXZWxsIFBvc2l0aW9uCVNhbXBsZSBOYW1lCVRhcmdldCBOYW1lCVRhc2sJUmVwb3J0ZXIJUXVlbmNoZXIJQ1QJQ3QgVGhyZXNob2xkCjEJQTEJMzgzODYxCU4xCVVOS05PV04JRkFNCU5vbmUJMjMuMDYwCTE1NCwzOTkuNDUzCjEJQTEJMzgzODYxCU4yCVVOS05PV04JVklDCU5vbmUJMjMuNTg1CTI1LDIzMS40NjcKMQlBMQkzODM4NjEJUlAJVU5LTk9XTglST1gJTm9uZQkyOS4wNDkJMTAzLDYwOC45OTIKMglBMgkzODM4NzAJTjEJVU5LTk9XTglGQU0JTm9uZQkyNS44MTkJMTU0LDM5OS40NTMKMglBMgkzODM4NzAJTjIJVU5LTk9XTglWSUMJTm9uZQkyNS44MjIJMjUsMjMxLjQ2NwoyCUEyCTM4Mzg3MAlSUAlVTktOT1dOCVJPWAlOb25lCTI4LjM4NwkxMDMsNjA4Ljk5MgozCUEzCTM4NDcyMwlOMQlVTktOT1dOCUZBTQlOb25lCTIyLjM5NwkxNTQsMzk5LjQ1MwozCUEzCTM4NDcyMwlOMglVTktOT1dOCVZJQwlOb25lCTIxLjkyMwkyNSwyMzEuNDY3CjMJQTMJMzg0NzIzCVJQCVVOS05PV04JUk9YCU5vbmUJMjYuOTI1CTEwMyw2MDguOTkyCjQJQTQJMzgzNDk2CU4xCVVOS05PV04JRkFNCU5vbmUJMjUuMTYzCTE1NCwzOTkuNDUzCjQJQTQJMzgzNDk2CU4yCVVOS05PV04JVklDCU5vbmUJMjYuMDgyCTI1LDIzMS40NjcKNAlBNAkzODM0OTYJUlAJVU5LTk9XTglST1gJTm9uZQkyNC4xNjQJMTAzLDYwOC45OTIKMTMJQjEJMzgzODY5CU4xCVVOS05PV04JRkFNCU5vbmUJMjguODY2CTE1NCwzOTkuNDUzCjEzCUIxCTM4Mzg2OQlOMglVTktOT1dOCVZJQwlOb25lCTI5LjI5OAkyNSwyMzEuNDY3CjEzCUIxCTM4Mzg2OQlSUAlVTktOT1dOCVJPWAlOb25lCTI3LjQwOAkxMDMsNjA4Ljk5MgoxNAlCMgkzODM5MDkJTjEJVU5LTk9XTglGQU0JTm9uZQkzMS40NjQJMTU0LDM5OS40NTMKMTQJQjIJMzgzOTA5CU4yCVVOS05PV04JVklDCU5vbmUJMzIuNDgyCTI1LDIzMS40NjcKMTQJQjIJMzgzOTA5CVJQCVVOS05PV04JUk9YCU5vbmUJMjIuOTMyCTEwMyw2MDguOTkyCjE1CUIzCTM4Mzg3NQlOMQlVTktOT1dOCUZBTQlOb25lCTM1LjQzNwkxNTQsMzk5LjQ1MwoxNQlCMwkzODM4NzUJTjIJVU5LTk9XTglWSUMJTm9uZQkzOC44NjAJMjUsMjMxLjQ2NwoxNQlCMwkzODM4NzUJUlAJVU5LTk9XTglST1gJTm9uZQkyNS4wOTQJMTAzLDYwOC45OTIKMTYJQjQJMzg0MDIwCU4xCVVOS05PV04JRkFNCU5vbmUJMzYuMDAyCTE1NCwzOTkuNDUzCjE2CUI0CTM4NDAyMAlOMglVTktOT1dOCVZJQwlOb25lCTM1Ljc3NgkyNSwyMzEuNDY3CjE2CUI0CTM4NDAyMAlSUAlVTktOT1dOCVJPWAlOb25lCTI5LjM5NAkxMDMsNjA4Ljk5MgoyNQlDMQkzODM5MDEJTjEJVU5LTk9XTglGQU0JTm9uZQlVbmRldGVybWluZWQJMTU0LDM5OS40NTMKMjUJQzEJMzgzOTAxCU4yCVVOS05PV04JVklDCU5vbmUJVW5kZXRlcm1pbmVkCTI1LDIzMS40NjcKMjUJQzEJMzgzOTAxCVJQCVVOS05PV04JUk9YCU5vbmUJMjguMjkyCTEwMyw2MDguOTkyCjI2CUMyCTM4Mzc5MQlOMQlVTktOT1dOCUZBTQlOb25lCVVuZGV0ZXJtaW5lZAkxNTQsMzk5LjQ1MwoyNglDMgkzODM3OTEJTjIJVU5LTk9XTglWSUMJTm9uZQlVbmRldGVybWluZWQJMjUsMjMxLjQ2NwoyNglDMgkzODM3OTEJUlAJVU5LTk9XTglST1gJTm9uZQkyMi43MjIJMTAzLDYwOC45OTIKMjcJQzMJMzgzOTAyCU4xCVVOS05PV04JRkFNCU5vbmUJVW5kZXRlcm1pbmVkCTE1NCwzOTkuNDUzCjI3CUMzCTM4MzkwMglOMglVTktOT1dOCVZJQwlOb25lCVVuZGV0ZXJtaW5lZAkyNSwyMzEuNDY3CjI3CUMzCTM4MzkwMglSUAlVTktOT1dOCVJPWAlOb25lCTI1Ljg0MAkxMDMsNjA4Ljk5MgoyOAlDNAkzODM3OTAJTjEJVU5LTk9XTglGQU0JTm9uZQlVbmRldGVybWluZWQJMTU0LDM5OS40NTMKMjgJQzQJMzgzNzkwCU4yCVVOS05PV04JVklDCU5vbmUJVW5kZXRlcm1pbmVkCTI1LDIzMS40NjcKMjgJQzQJMzgzNzkwCVJQCVVOS05PV04JUk9YCU5vbmUJMjMuMTkxCTEwMyw2MDguOTkyCjQ5CUUxCTM4NTM0NglOMQlVTktOT1dOCUZBTQlOb25lCTM0LjY0MAkxNTQsMzk5LjQ1Mwo0OQlFMQkzODUzNDYJTjIJVU5LTk9XTglWSUMJTm9uZQkzNS45OTEJMjUsMjMxLjQ2Nwo0OQlFMQkzODUzNDYJUlAJVU5LTk9XTglST1gJTm9uZQkyMi4zMzEJMTAzLDYwOC45OTIKNTAJRTIJMzg1MjUwCU4xCVVOS05PV04JRkFNCU5vbmUJMzUuMjIyCTE1NCwzOTkuNDUzCjUwCUUyCTM4NTI1MAlOMglVTktOT1dOCVZJQwlOb25lCTM3LjczMgkyNSwyMzEuNDY3CjUwCUUyCTM4NTI1MAlSUAlVTktOT1dOCVJPWAlOb25lCTIzLjc5NQkxMDMsNjA4Ljk5Mgo1MQlFMwkzODUxOTUJTjEJVU5LTk9XTglGQU0JTm9uZQkyOS41NjMJMTU0LDM5OS40NTMKNTEJRTMJMzg1MTk1CU4yCVVOS05PV04JVklDCU5vbmUJMzEuMDUzCTI1LDIzMS40NjcKNTEJRTMJMzg1MTk1CVJQCVVOS05PV04JUk9YCU5vbmUJMjMuNzQzCTEwMyw2MDguOTkyCjUyCUU0CTM4NTE4NQlOMQlVTktOT1dOCUZBTQlOb25lCTMyLjI2MAkxNTQsMzk5LjQ1Mwo1MglFNAkzODUxODUJTjIJVU5LTk9XTglWSUMJTm9uZQkzMi4xMjQJMjUsMjMxLjQ2Nwo1MglFNAkzODUxODUJUlAJVU5LTk9XTglST1gJTm9uZQkyNC40NjcJMTAzLDYwOC45OTIKNTMJRTUJMzg1MTQ5CU4xCVVOS05PV04JRkFNCU5vbmUJMzEuMjU5CTE1NCwzOTkuNDUzCjUzCUU1CTM4NTE0OQlOMglVTktOT1dOCVZJQwlOb25lCTMxLjUzMAkyNSwyMzEuNDY3CjUzCUU1CTM4NTE0OQlSUAlVTktOT1dOCVJPWAlOb25lCTIyLjE3NAkxMDMsNjA4Ljk5Mgo1NQlFNwkzODUzNDYJTjEJVU5LTk9XTglGQU0JTm9uZQkzNS41NDQJMTU0LDM5OS40NTMKNTUJRTcJMzg1MzQ2CVJQCVVOS05PV04JUk9YCU5vbmUJMjAuNzkzCTEwMyw2MDguOTkyCjU2CUU4CTM4NTI1MAlOMQlVTktOT1dOCUZBTQlOb25lCTM2LjA3MwkxNTQsMzk5LjQ1Mwo1NglFOAkzODUyNTAJUlAJVU5LTk9XTglST1gJTm9uZQkyMi4yMDYJMTAzLDYwOC45OTIKNTcJRTkJMzg1MTg1CU4xCVVOS05PV04JRkFNCU5vbmUJMzMuMDUwCTE1NCwzOTkuNDUzCjU3CUU5CTM4NTE4NQlSUAlVTktOT1dOCVJPWAlOb25lCTIzLjIzNgkxMDMsNjA4Ljk5Mgo1OAlFMTAJMzg1MTk1CU4xCVVOS05PV04JRkFNCU5vbmUJMjkuNzMyCTE1NCwzOTkuNDUzCjU4CUUxMAkzODUxOTUJUlAJVU5LTk9XTglST1gJTm9uZQkyMi40NzcJMTAzLDYwOC45OTIKNTkJRTExCTM4NTE0OQlOMQlVTktOT1dOCUZBTQlOb25lCTMxLjI4MgkxNTQsMzk5LjQ1Mwo1OQlFMTEJMzg1MTQ5CVJQCVVOS05PV04JUk9YCU5vbmUJMjEuMTcyCTEwMyw2MDguOTkyCjYxCUYxCTM4NTM2MglOMQlVTktOT1dOCUZBTQlOb25lCTM2LjQ3OQkxNTQsMzk5LjQ1Mwo2MQlGMQkzODUzNjIJTjIJVU5LTk9XTglWSUMJTm9uZQkzNi43MzIJMjUsMjMxLjQ2Nwo2MQlGMQkzODUzNjIJUlAJVU5LTk9XTglST1gJTm9uZQkyMS44MjgJMTAzLDYwOC45OTIKNjIJRjIJMzg1MjU5CU4xCVVOS05PV04JRkFNCU5vbmUJMzEuNjMxCTE1NCwzOTkuNDUzCjYyCUYyCTM4NTI1OQlOMglVTktOT1dOCVZJQwlOb25lCTMyLjI3MQkyNSwyMzEuNDY3CjYyCUYyCTM4NTI1OQlSUAlVTktOT1dOCVJPWAlOb25lCTIyLjM2OQkxMDMsNjA4Ljk5Mgo2MwlGMwkzODcwMjQJTjEJVU5LTk9XTglGQU0JTm9uZQkzNC4xODMJMTU0LDM5OS40NTMKNjMJRjMJMzg3MDI0CU4yCVVOS05PV04JVklDCU5vbmUJMzMuNjYzCTI1LDIzMS40NjcKNjMJRjMJMzg3MDI0CVJQCVVOS05PV04JUk9YCU5vbmUJMjguNzU0CTEwMyw2MDguOTkyCjY0CUY0CTM4NzIxOQlOMQlVTktOT1dOCUZBTQlOb25lCTM1LjEzNAkxNTQsMzk5LjQ1Mwo2NAlGNAkzODcyMTkJTjIJVU5LTk9XTglWSUMJTm9uZQkzMS45ODEJMjUsMjMxLjQ2Nwo2NAlGNAkzODcyMTkJUlAJVU5LTk9XTglST1gJTm9uZQkyNi4zOTkJMTAzLDYwOC45OTIKNjUJRjUJMzg3MjIyCU4xCVVOS05PV04JRkFNCU5vbmUJMzUuNDI3CTE1NCwzOTkuNDUzCjY1CUY1CTM4NzIyMglOMglVTktOT1dOCVZJQwlOb25lCTM1LjIyOQkyNSwyMzEuNDY3CjY1CUY1CTM4NzIyMglSUAlVTktOT1dOCVJPWAlOb25lCTI2LjQ2OQkxMDMsNjA4Ljk5Mgo2NwlGNwkzODUzNjIJTjEJVU5LTk9XTglGQU0JTm9uZQkzNC45MjUJMTU0LDM5OS40NTMKNjcJRjcJMzg1MzYyCVJQCVVOS05PV04JUk9YCU5vbmUJMjAuNDA1CTEwMyw2MDguOTkyCjY4CUY4CTM4NTI1OQlOMQlVTktOT1dOCUZBTQlOb25lCTMxLjc4OQkxNTQsMzk5LjQ1Mwo2OAlGOAkzODUyNTkJUlAJVU5LTk9XTglST1gJTm9uZQkyMS4wNjIJMTAzLDYwOC45OTIKNjkJRjkJMzg3MDI0CU4xCVVOS05PV04JRkFNCU5vbmUJMzYuMDY5CTE1NCwzOTkuNDUzCjY5CUY5CTM4NzAyNAlSUAlVTktOT1dOCVJPWAlOb25lCTI3LjI5MwkxMDMsNjA4Ljk5Mgo3MAlGMTAJMzg3MjE5CU4xCVVOS05PV04JRkFNCU5vbmUJMzUuMDUzCTE1NCwzOTkuNDUzCjcwCUYxMAkzODcyMTkJUlAJVU5LTk9XTglST1gJTm9uZQkyNS4wMDgJMTAzLDYwOC45OTIKNzEJRjExCTM4NzIyMglOMQlVTktOT1dOCUZBTQlOb25lCTM0LjUwMAkxNTQsMzk5LjQ1Mwo3MQlGMTEJMzg3MjIyCVJQCVVOS05PV04JUk9YCU5vbmUJMjUuMjQyCTEwMyw2MDguOTkyCjczCUcxCTM4NzIxNAlOMQlVTktOT1dOCUZBTQlOb25lCVVuZGV0ZXJtaW5lZAkxNTQsMzk5LjQ1Mwo3MwlHMQkzODcyMTQJTjIJVU5LTk9XTglWSUMJTm9uZQlVbmRldGVybWluZWQJMjUsMjMxLjQ2Nwo3MwlHMQkzODcyMTQJUlAJVU5LTk9XTglST1gJTm9uZQkyNS4wNDgJMTAzLDYwOC45OTIKNzQJRzIJMzg3MjE2CU4xCVVOS05PV04JRkFNCU5vbmUJVW5kZXRlcm1pbmVkCTE1NCwzOTkuNDUzCjc0CUcyCTM4NzIxNglOMglVTktOT1dOCVZJQwlOb25lCVVuZGV0ZXJtaW5lZAkyNSwyMzEuNDY3Cjc0CUcyCTM4NzIxNglSUAlVTktOT1dOCVJPWAlOb25lCTIzLjAyMwkxMDMsNjA4Ljk5Mgo3NQlHMwkzODcyMTEJTjEJVU5LTk9XTglGQU0JTm9uZQkzNC40NjYJMTU0LDM5OS40NTMKNzUJRzMJMzg3MjExCU4yCVVOS05PV04JVklDCU5vbmUJMzUuOTg3CTI1LDIzMS40NjcKNzUJRzMJMzg3MjExCVJQCVVOS05PV04JUk9YCU5vbmUJMjIuMTY3CTEwMyw2MDguOTkyCjc2CUc0CTM4NzIwNQlOMQlVTktOT1dOCUZBTQlOb25lCTI5Ljc0MQkxNTQsMzk5LjQ1Mwo3NglHNAkzODcyMDUJTjIJVU5LTk9XTglWSUMJTm9uZQkzMC4wODEJMjUsMjMxLjQ2Nwo3NglHNAkzODcyMDUJUlAJVU5LTk9XTglST1gJTm9uZQkyMy44NzQJMTAzLDYwOC45OTIKNzcJRzUJMzg3MDkyCU4xCVVOS05PV04JRkFNCU5vbmUJMzAuNjMwCTE1NCwzOTkuNDUzCjc3CUc1CTM4NzA5MglOMglVTktOT1dOCVZJQwlOb25lCTMwLjY5OQkyNSwyMzEuNDY3Cjc3CUc1CTM4NzA5MglSUAlVTktOT1dOCVJPWAlOb25lCTIzLjkwNwkxMDMsNjA4Ljk5Mgo3OQlHNwkzODcyMTQJTjEJVU5LTk9XTglGQU0JTm9uZQkzNy4xNDkJMTU0LDM5OS40NTMKNzkJRzcJMzg3MjE0CVJQCVVOS05PV04JUk9YCU5vbmUJMjMuNjIxCTEwMyw2MDguOTkyCjgwCUc4CTM4NzIxNglOMQlVTktOT1dOCUZBTQlOb25lCVVuZGV0ZXJtaW5lZAkxNTQsMzk5LjQ1Mwo4MAlHOAkzODcyMTYJUlAJVU5LTk9XTglST1gJTm9uZQkyMS41NDcJMTAzLDYwOC45OTIKODEJRzkJMzg3MjExCU4xCVVOS05PV04JRkFNCU5vbmUJMzcuMjExCTE1NCwzOTkuNDUzCjgxCUc5CTM4NzIxMQlSUAlVTktOT1dOCVJPWAlOb25lCTIxLjIyMgkxMDMsNjA4Ljk5Mgo4MglHMTAJMzg3MjA1CU4xCVVOS05PV04JRkFNCU5vbmUJMjkuODUxCTE1NCwzOTkuNDUzCjgyCUcxMAkzODcyMDUJUlAJVU5LTk9XTglST1gJTm9uZQkyMi42NjcJMTAzLDYwOC45OTIKODMJRzExCTM4NzA5MglOMQlVTktOT1dOCUZBTQlOb25lCTMxLjAxNwkxNTQsMzk5LjQ1Mwo4MwlHMTEJMzg3MDkyCVJQCVVOS05PV04JUk9YCU5vbmUJMjIuNzU4CTEwMyw2MDguOTky</inboundTemplate>
+      <outboundTemplate encoding="base64">ewogICJhcGlLZXkiIDogIjYzZjFkMGRlLTgzYjQtNGJmMS1iMmY3LTM4YTgwYjhlYmFjMCIsCiAgInJlc3VsdE9wZXJhdGlvbiIgOiB7CiAgICAidGFyZ2V0IiA6ICJjb3ZpZFJlc3VsdCIsCiAgICAibWV0aG9kIiA6ICJ1cGRhdGVDT1ZJRFJlc3VsdCIsCiAgICAicmVzdWx0cyIgOiBbCiAgICBdCiAgfQp9Cg==</outboundTemplate>
+      <inboundDataType>DELIMITED</inboundDataType>
+      <outboundDataType>JSON</outboundDataType>
+      <inboundProperties class="com.mirth.connect.plugins.datatypes.delimited.DelimitedDataTypeProperties" version="3.10.1">
+        <serializationProperties class="com.mirth.connect.plugins.datatypes.delimited.DelimitedSerializationProperties" version="3.10.1">
+          <columnDelimiter>\t</columnDelimiter>
+          <recordDelimiter>\n</recordDelimiter>
+          <quoteToken>&quot;</quoteToken>
+          <escapeWithDoubleQuote>true</escapeWithDoubleQuote>
+          <quoteEscapeToken>\</quoteEscapeToken>
+          <columnNames>
+            <string>Well</string>
+            <string>WellPosition</string>
+            <string>SampleName</string>
+            <string>TargetName</string>
+            <string>Task</string>
+            <string>Reporter</string>
+            <string>Quencher</string>
+            <string>CT</string>
+            <string>CtThreshold</string>
+          </columnNames>
+          <numberedRows>false</numberedRows>
+          <ignoreCR>true</ignoreCR>
+        </serializationProperties>
+        <deserializationProperties class="com.mirth.connect.plugins.datatypes.delimited.DelimitedDeserializationProperties" version="3.10.1">
+          <columnDelimiter>,</columnDelimiter>
+          <recordDelimiter>\n</recordDelimiter>
+          <quoteToken>&quot;</quoteToken>
+          <escapeWithDoubleQuote>true</escapeWithDoubleQuote>
+          <quoteEscapeToken>\</quoteEscapeToken>
+        </deserializationProperties>
+        <batchProperties class="com.mirth.connect.plugins.datatypes.delimited.DelimitedBatchProperties" version="3.10.1">
+          <splitType>Record</splitType>
+          <batchSkipRecords>0</batchSkipRecords>
+          <batchMessageDelimiter></batchMessageDelimiter>
+          <batchMessageDelimiterIncluded>false</batchMessageDelimiterIncluded>
+          <batchGroupingColumn></batchGroupingColumn>
+          <batchScript></batchScript>
+        </batchProperties>
+      </inboundProperties>
+      <outboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+        <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+          <splitType>JavaScript</splitType>
+          <batchScript></batchScript>
+        </batchProperties>
+      </outboundProperties>
+    </transformer>
+    <filter version="3.10.1">
+      <elements/>
+    </filter>
+    <transportName>File Reader</transportName>
+    <mode>SOURCE</mode>
+    <enabled>true</enabled>
+    <waitForPrevious>true</waitForPrevious>
+  </sourceConnector>
+  <destinationConnectors>
+    <connector version="3.10.1">
+      <metaDataId>4</metaDataId>
+      <name>DistributeMessage</name>
+      <properties class="com.mirth.connect.connectors.tcp.TcpDispatcherProperties" version="3.10.1">
+        <pluginProperties/>
+        <destinationConnectorProperties version="3.10.1">
+          <queueEnabled>true</queueEnabled>
+          <sendFirst>true</sendFirst>
+          <retryIntervalMillis>10000</retryIntervalMillis>
+          <regenerateTemplate>false</regenerateTemplate>
+          <retryCount>5</retryCount>
+          <rotate>true</rotate>
+          <includeFilterTransformer>false</includeFilterTransformer>
+          <threadCount>1</threadCount>
+          <threadAssignmentVariable></threadAssignmentVariable>
+          <validateResponse>true</validateResponse>
+          <resourceIds class="linked-hash-map">
+            <entry>
+              <string>Default Resource</string>
+              <string>[Default Resource]</string>
+            </entry>
+          </resourceIds>
+          <queueBufferSize>1000</queueBufferSize>
+          <reattachAttachments>true</reattachAttachments>
+        </destinationConnectorProperties>
+        <transmissionModeProperties class="com.mirth.connect.plugins.mllpmode.MLLPModeProperties">
+          <pluginPointName>MLLP</pluginPointName>
+          <startOfMessageBytes>0B</startOfMessageBytes>
+          <endOfMessageBytes>1C0D</endOfMessageBytes>
+          <useMLLPv2>false</useMLLPv2>
+          <ackBytes>06</ackBytes>
+          <nackBytes>15</nackBytes>
+          <maxRetries>2</maxRetries>
+        </transmissionModeProperties>
+        <serverMode>false</serverMode>
+        <remoteAddress>10.128.0.6</remoteAddress>
+        <remotePort>8665</remotePort>
+        <overrideLocalBinding>false</overrideLocalBinding>
+        <localAddress>0.0.0.0</localAddress>
+        <localPort>0</localPort>
+        <sendTimeout>30000</sendTimeout>
+        <bufferSize>65536</bufferSize>
+        <maxConnections>10</maxConnections>
+        <keepConnectionOpen>true</keepConnectionOpen>
+        <checkRemoteHost>false</checkRemoteHost>
+        <responseTimeout>30000</responseTimeout>
+        <ignoreResponse>false</ignoreResponse>
+        <queueOnResponseTimeout>true</queueOnResponseTimeout>
+        <dataTypeBinary>false</dataTypeBinary>
+        <charsetEncoding>DEFAULT_ENCODING</charsetEncoding>
+        <template>${message.encodedData}</template>
+      </properties>
+      <transformer version="3.10.1">
+        <elements/>
+        <inboundTemplate encoding="base64"></inboundTemplate>
+        <outboundTemplate encoding="base64"></outboundTemplate>
+        <inboundDataType>JSON</inboundDataType>
+        <outboundDataType>JSON</outboundDataType>
+        <inboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </inboundProperties>
+        <outboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </outboundProperties>
+      </transformer>
+      <responseTransformer version="3.10.1">
+        <elements/>
+        <inboundDataType>JSON</inboundDataType>
+        <outboundDataType>JSON</outboundDataType>
+        <inboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </inboundProperties>
+        <outboundProperties class="com.mirth.connect.plugins.datatypes.json.JSONDataTypeProperties" version="3.10.1">
+          <batchProperties class="com.mirth.connect.plugins.datatypes.json.JSONBatchProperties" version="3.10.1">
+            <splitType>JavaScript</splitType>
+            <batchScript></batchScript>
+          </batchProperties>
+        </outboundProperties>
+      </responseTransformer>
+      <filter version="3.10.1">
+        <elements>
+          <com.mirth.connect.plugins.rulebuilder.RuleBuilderRule version="3.10.1">
+            <name>Accept message if &quot;msg[&apos;resultOperation&apos;][&apos;send&apos;]&quot; equals true</name>
+            <sequenceNumber>0</sequenceNumber>
+            <enabled>true</enabled>
+            <field>msg[&apos;resultOperation&apos;][&apos;send&apos;]</field>
+            <condition>EQUALS</condition>
+            <values>
+              <string>true</string>
+            </values>
+          </com.mirth.connect.plugins.rulebuilder.RuleBuilderRule>
+        </elements>
+      </filter>
+      <transportName>TCP Sender</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>true</enabled>
+      <waitForPrevious>false</waitForPrevious>
+    </connector>
+  </destinationConnectors>
+  <preprocessingScript>// Modify the message variable below to pre process data
+return message;</preprocessingScript>
+  <postprocessingScript>// This script executes once after a message has been processed
+// Responses returned from here will be stored as &quot;Postprocessor&quot; in the response map
+return;</postprocessingScript>
+  <deployScript>// This script executes once when the channel is deployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</deployScript>
+  <undeployScript>// This script executes once when the channel is undeployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</undeployScript>
+  <properties version="3.10.1">
+    <clearGlobalChannelMap>true</clearGlobalChannelMap>
+    <messageStorageMode>DEVELOPMENT</messageStorageMode>
+    <encryptData>false</encryptData>
+    <removeContentOnCompletion>false</removeContentOnCompletion>
+    <removeOnlyFilteredOnCompletion>false</removeOnlyFilteredOnCompletion>
+    <removeAttachmentsOnCompletion>false</removeAttachmentsOnCompletion>
+    <initialState>STARTED</initialState>
+    <storeAttachments>true</storeAttachments>
+    <metaDataColumns>
+      <metaDataColumn>
+        <name>SOURCE</name>
+        <type>STRING</type>
+        <mappingName>mirth_source</mappingName>
+      </metaDataColumn>
+      <metaDataColumn>
+        <name>TYPE</name>
+        <type>STRING</type>
+        <mappingName>mirth_type</mappingName>
+      </metaDataColumn>
+    </metaDataColumns>
+    <attachmentProperties version="3.10.1">
+      <type>None</type>
+      <properties/>
+    </attachmentProperties>
+    <resourceIds class="linked-hash-map">
+      <entry>
+        <string>Default Resource</string>
+        <string>[Default Resource]</string>
+      </entry>
+    </resourceIds>
+  </properties>
+  <exportData>
+    <metadata>
+      <enabled>true</enabled>
+      <lastModified>
+        <time>1634157390375</time>
+        <timezone>America/Chicago</timezone>
+      </lastModified>
+      <pruningSettings>
+        <archiveEnabled>true</archiveEnabled>
+      </pruningSettings>
+    </metadata>
+    <codeTemplateLibraries>
+      <codeTemplateLibrary version="3.10.1">
+        <id>e179dbdb-5c07-43be-80d2-6adef2c7a9e4</id>
+        <name>Library 1</name>
+        <revision>6</revision>
+        <lastModified>
+          <time>1633356687045</time>
+          <timezone>America/Chicago</timezone>
+        </lastModified>
+        <description>Eval Covid Cases</description>
+        <includeNewChannels>false</includeNewChannels>
+        <enabledChannelIds>
+          <string>27964123-ef69-4aac-a2c5-8c8adf8581b5</string>
+        </enabledChannelIds>
+        <disabledChannelIds>
+          <string>b6055b22-c46f-4597-ab6a-d81579f94a4a</string>
+          <string>9eeaeb99-8c79-4780-8992-93fffcbba794</string>
+          <string>0bb9b087-5e6b-4a07-93b9-00b96d804674</string>
+          <string>b5835609-ade8-4074-b3a8-4d52e6196cb2</string>
+          <string>580c9f13-6ccc-42d8-8b03-984e149b2383</string>
+          <string>0fe3e730-e896-4601-8bb6-38133e2650b5</string>
+          <string>c762def1-bd60-4444-a7b3-75163392ffb2</string>
+          <string>2f82f670-8de5-4820-b574-5ea4a9a18e34</string>
+          <string>c00bc3d9-45f4-4024-8555-c0371e451385</string>
+          <string>89a362d4-d388-4696-a5c6-57d543ace34f</string>
+          <string>62554e26-80ef-4e41-95ac-61acff9ed146</string>
+          <string>e3ad9af6-aa69-4926-8e13-b3634cbb4d98</string>
+          <string>6f186b33-79aa-4c37-a748-7b5cdef3b590</string>
+          <string>173e6af9-8372-493b-a025-4e90077912c1</string>
+          <string>41724da4-621f-409b-a6d7-e4c8b2a545df</string>
+          <string>5bf53659-e806-4b88-a4ed-66c5812e583f</string>
+          <string>e98e0297-0a8f-49df-94be-7239b6ebe464</string>
+          <string>43977b63-a44d-42bb-90e8-04d89f6e5c33</string>
+          <string>035fbc3e-c910-4808-8e60-f672bbfb7b84</string>
+          <string>aeddc01b-e265-4c69-8d06-51243cdafbff</string>
+          <string>f73a943a-ebd1-49cb-8fc6-e5a910407930</string>
+          <string>14a6ef94-a803-4fb8-b682-c75e09a12f5a</string>
+          <string>d0e05ee0-21cc-4c11-9f97-424707d43b68</string>
+          <string>acd256c2-2ce3-4159-b6fb-24c99abebdea</string>
+          <string>2ea7dc4e-94a8-46f6-b3bb-e17bd6c34858</string>
+          <string>decd4647-56e6-4475-bc4f-b6ace79e8d60</string>
+          <string>75041a92-cbae-4bbb-912a-0639c153d791</string>
+          <string>303183a5-a2c3-456c-bf2a-89777a169c6c</string>
+          <string>238d3078-7810-4944-bc85-19adb00ae20e</string>
+          <string>5f8f082e-2a63-4d9b-ba9f-c65e182927a9</string>
+          <string>b5b1b0b4-1346-4cf7-8d67-b03d4dea820f</string>
+          <string>0f629ed5-9844-4119-8915-dc46f934793d</string>
+          <string>eeafb8f0-4c11-46ff-ad56-0846c8558c50</string>
+          <string>075cd4b0-b996-4a28-8ad0-8b64979c3632</string>
+          <string>3bd887d0-e124-4581-928f-cf076731bf8b</string>
+          <string>4d695ab6-a628-42ba-8fbc-c6f0554f08a3</string>
+          <string>4368dca4-3f9b-49e6-8a89-73d89e002129</string>
+          <string>7a90b459-7653-4c0b-9b73-c752d712c3f4</string>
+          <string>a55f3980-4420-4568-8273-3c1ea9c17870</string>
+          <string>f2292198-4127-47fa-9238-c22f01d68cf3</string>
+          <string>7d18a0d8-1be6-4307-a91e-7abe9a63f13f</string>
+          <string>ac37e39b-18e9-470e-90c2-a1763a85bd89</string>
+          <string>29b272c7-d693-4e8d-8803-1d0b58d1aed7</string>
+          <string>73bde727-9012-4bef-8c69-ae376837ddfb</string>
+          <string>398e1651-68a3-4cc0-8841-cb8a66d67762</string>
+          <string>0b9dfe6b-2327-4180-a389-a3478b7099f5</string>
+          <string>f42f02d0-9d9a-474a-a4e3-727076208167</string>
+          <string>9d07db7c-82c6-460d-b36b-d13381f2f8e7</string>
+          <string>2ce291b2-ab70-4cc7-9793-647f7da4379b</string>
+          <string>ac10df61-e4c8-4c38-a6c7-a575391d6b70</string>
+        </disabledChannelIds>
+        <codeTemplates>
+          <codeTemplate version="3.10.1">
+            <id>cbb235d1-011f-4d56-9311-6911a4a11624</id>
+            <name>Template 1</name>
+            <revision>5</revision>
+            <lastModified>
+              <time>1633623253922</time>
+              <timezone>America/Chicago</timezone>
+            </lastModified>
+            <contextSet>
+              <delegate>
+                <contextType>CHANNEL_ATTACHMENT</contextType>
+                <contextType>SOURCE_FILTER_TRANSFORMER</contextType>
+                <contextType>CHANNEL_BATCH</contextType>
+                <contextType>CHANNEL_UNDEPLOY</contextType>
+                <contextType>CHANNEL_DEPLOY</contextType>
+                <contextType>SOURCE_RECEIVER</contextType>
+                <contextType>GLOBAL_PREPROCESSOR</contextType>
+                <contextType>DESTINATION_DISPATCHER</contextType>
+                <contextType>DESTINATION_FILTER_TRANSFORMER</contextType>
+                <contextType>DESTINATION_RESPONSE_TRANSFORMER</contextType>
+                <contextType>CHANNEL_POSTPROCESSOR</contextType>
+                <contextType>CHANNEL_PREPROCESSOR</contextType>
+                <contextType>GLOBAL_DEPLOY</contextType>
+                <contextType>GLOBAL_UNDEPLOY</contextType>
+                <contextType>GLOBAL_POSTPROCESSOR</contextType>
+              </delegate>
+            </contextSet>
+            <properties class="com.mirth.connect.model.codetemplates.BasicCodeTemplateProperties">
+              <type>FUNCTION</type>
+              <code>function EvalCovidCase(n1,n2,rp,rpCutoff){
+  if (n1!=&apos;Not Found&apos;){n1 = parseFloat(n1)||&quot;Undetermined&quot;}
+  if (n2!=&apos;Not Found&apos;){n2 = parseFloat(n2)||&quot;Undetermined&quot;}
+  if (rp!=&apos;Not Found&apos;){rp = parseFloat(rp)||&quot;Undetermined&quot;}
+  
+  var rpValid =  (rp != &apos;Not Found&apos; &amp;&amp; rp != &apos;Undetermined&apos; ? true : false)
+  var n1Valid =  (n1 != &apos;Not Found&apos; &amp;&amp; n1 != &apos;Undetermined&apos; ? true : false)
+  var n2Valid =  (n2 != &apos;Not Found&apos; &amp;&amp; n2 != &apos;Undetermined&apos; ? true : false)
+
+  var rpLessThenCutoff = (rp &lt; rpCutoff);
+  var n1LessThenCutoff = (n1 &lt; rpCutoff);
+  var n2LessThenCutoff = (n2 &lt; rpCutoff);
+  
+  if(!rpLessThenCutoff &amp;&amp; rpValid){
+		return {result:&apos;Hold&apos;,comment:&apos;Invalid RP, greater than RP Cutoff&apos;}
+  }
+  
+  if(!n1LessThenCutoff &amp;&amp; n1Valid){
+		return {result:&apos;Hold&apos;,comment:&apos;HIGH N1 CT Value&apos;}
+  }
+  
+  if(!n2LessThenCutoff &amp;&amp; n2Valid){
+		return {result:&apos;Hold&apos;,comment:&apos;HIGH N2 CT Value&apos;}
+  }
+
+  if(n1 == &apos;Undetermined&apos; &amp;&amp; n2 == &apos;Undetermined&apos;){
+  	return {result:&apos;Not Detected&apos;,comment:&apos;&apos;}
+  }
+  
+  if((n1LessThenCutoff &amp;&amp; !n2LessThenCutoff)||(n2LessThenCutoff &amp;&amp; !n1LessThenCutoff)){
+  	return {result:&apos;Hold&apos;,comment:&apos;N1 and N2 CT Discrepancy&apos;}
+  }
+  
+  if(n1LessThenCutoff &amp;&amp; n2LessThenCutoff){
+  	return {result:&apos;Detected&apos;,comment:&apos;&apos;}
+  }
+  //DEFAULT VALUE
+  return {result:&apos;Hold&apos;,comment:&apos;NO QUAL&apos;}
+  
+}
+
+function EvalFluCase(n1,n2,rp,rpCutoff){
+  if (n1!=&apos;Not Found&apos;){n1 = parseFloat(n1)||&quot;Undetermined&quot;}
+  if (n2!=&apos;Not Found&apos;){n2 = parseFloat(n2)||&quot;Undetermined&quot;}
+  if (rp!=&apos;Not Found&apos;){rp = parseFloat(rp)||&quot;Undetermined&quot;}
+  
+  var rpValid =  (rp != &apos;Not Found&apos; &amp;&amp; rp != &apos;Undetermined&apos; ? true : false)
+  var n1Valid =  (n1 != &apos;Not Found&apos; &amp;&amp; n1 != &apos;Undetermined&apos; ? true : false)
+  var n2Valid =  (n2 != &apos;Not Found&apos; &amp;&amp; n2 != &apos;Undetermined&apos; ? true : false)
+
+  var rpLessThenCutoff = (rp &lt; rpCutoff);
+  var n1LessThenCutoff = (n1 &lt; rpCutoff);
+  var n2LessThenCutoff = (n2 &lt; rpCutoff);
+  
+  if(!rpLessThenCutoff &amp;&amp; rpValid){
+		return {result:&apos;Hold&apos;,comment:&apos;Invalid RP, greater than RP Cutoff&apos;}
+  }
+  
+  if(!n1LessThenCutoff &amp;&amp; n1Valid){
+		return {result:&apos;Hold&apos;,comment:&apos;HIGH N1 CT Value&apos;}
+  }
+  
+  if(!n2LessThenCutoff &amp;&amp; n2Valid){
+		return {result:&apos;Hold&apos;,comment:&apos;HIGH N2 CT Value&apos;}
+  }
+
+  if(n1 == &apos;Undetermined&apos; &amp;&amp; n2 == &apos;Undetermined&apos;){
+  	return {result:&apos;Not Detected&apos;,comment:&apos;&apos;}
+  }
+  
+  if((n1LessThenCutoff &amp;&amp; !n2LessThenCutoff)||(n2LessThenCutoff &amp;&amp; !n1LessThenCutoff)){
+  	return {result:&apos;Hold&apos;,comment:&apos;N1 and N2 CT Discrepancy&apos;}
+  }
+  
+  if(n1LessThenCutoff &amp;&amp; n2LessThenCutoff){
+  	return {result:&apos;Detected&apos;,comment:&apos;&apos;}
+  }
+  //DEFAULT VALUE
+  return {result:&apos;Hold&apos;,comment:&apos;NO QUAL&apos;}
+  
+}</code>
+            </properties>
+          </codeTemplate>
+        </codeTemplates>
+      </codeTemplateLibrary>
+    </codeTemplateLibraries>
+  </exportData>
+</channel>
